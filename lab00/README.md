@@ -2,6 +2,7 @@
 
 ## NOMBRES PARTICIPANTES
 Jhohan Stiven Rodriguez Rodriguez
+
 Alejandro Brandon Prieto León
 
 ## comandos para los ejercicios 
