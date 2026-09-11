@@ -5,6 +5,8 @@ Jhohan Stiven Rodriguez Rodriguez
 
 Alejandro Brandon Prieto León
 
+Ángel Alirio Rivera Amortegui
+
 ## comandos para los ejercicios 
 
 ======== EJERCICIO 1 ========
