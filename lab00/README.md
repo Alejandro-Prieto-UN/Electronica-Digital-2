@@ -126,7 +126,7 @@ El sistema cuenta con un reset asíncrono que inicializa la FSM en el estado `S0
 
 ![Diagrama de estados del ejercicio 1](Imagenes_diagramas/diagramaestados1.jpeg)
 
-![Diagrama de bloques del ejercicio 1](Imagenes_diagramas/diagramabloques1.jpeg)
+![Diagrama de bloques del ejercicio 1](Imagenes_diagramas/Punto1.jpeg)
 
 ## Archivos
 
