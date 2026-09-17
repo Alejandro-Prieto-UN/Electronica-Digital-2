@@ -294,7 +294,7 @@ La siguiente suma produciría 21, por lo que el sistema termina manteniendo:
 
 En este modo el acumulador nunca supera el valor 20.
 
-![Diagrama de estados del ejercicio 2](Imagenes_diagramas/diagramaestados2.jpeg)
+![Diagrama de estados del ejercicio 2](Imagenes_diagramas/Punto2.png)
 
 ![Diagrama de bloques del ejercicio 2](Imagenes_diagramas/diagramabloques2.jpeg)
 
@@ -566,7 +566,7 @@ La simulación permite comprobar:
 - El desplazamiento correcto de `shift_reg`.
 - El conteo de los bits mediante `bit_count`.
 
-![Diagrama de estados del ejercicio 3](Imagenes_diagramas/diagramaestados3.jpeg)
+![Diagrama de estados del ejercicio 3](Imagenes_diagramas/Punto3.png)
 
 ![Diagrama de bloques del ejercicio 3](Imagenes_diagramas/diagramabloques3.jpeg)
 
