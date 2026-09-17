@@ -296,7 +296,6 @@ En este modo el acumulador nunca supera el valor 20.
 
 ![Diagrama de estados del ejercicio 2](Imagenes_diagramas/Punto2.png)
 
-![Diagrama de bloques del ejercicio 2](Imagenes_diagramas/diagramabloques2.jpeg)
 
 ## Archivos
 
@@ -568,7 +567,6 @@ La simulación permite comprobar:
 
 ![Diagrama de estados del ejercicio 3](Imagenes_diagramas/Punto3.png)
 
-![Diagrama de bloques del ejercicio 3](Imagenes_diagramas/diagramabloques3.jpeg)
 
 ## Archivos
 
