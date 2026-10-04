@@ -81,7 +81,7 @@ La decodificación de las operaciones y colores se rige por la siguiente tabla:
 
 ### Diagrama de Bloques
 
-![Diagrama de bloques del sistema](evidencias/diagrama_bloques.png)
+![Diagrama de bloques del sistema](Ejercicio2/evidencias/diagrama_bloques.png)
 *(Nota: Añade aquí la ruta a tu propio diagrama si hicieron uno en draw.io o similar, o simplemente borra esta línea)*
 
 ## Implementación Física (Hardware)
@@ -131,25 +131,25 @@ La simulación permite comprobar las capacidades de memoria del sistema y su cap
 
 ### Evidencia
 
-![Simulación de GTKWave](evidencias/gtkwave_sim.png)
+![Simulación de GTKWave](Ejercicio2/evidencias/gtkwave_sim.png)
 
-![Pasos de sistesis, implementacion y bitstream de vivado](evidencias/prueba_vivado.png)
+![Pasos de sistesis, implementacion y bitstream de vivado](Ejercicio2/evidencias/prueba_vivado.png)
 
 ## Evidencia del funcionamiento en la FPGA
 
 # A=3=0011
 
-![Almacenamiento del Operando B](evidencias/B.png)
+![Almacenamiento del Operando B](Ejercicio2/evidencias/B.png)
 
-![Operación Suma](evidencias/suma.png)
+![Operación Suma](Ejercicio2/evidencias/suma.png)
 
-![Operación OR](evidencias/OR.png)
+![Operación OR](Ejercicio2/evidencias/OR.png)
 
-![Operación AND](evidencias/AND.png)
+![Operación AND](Ejercicio2/evidencias/AND.png)
 
-![Validación De Morgan (NAND)](evidencias/morgan.png)
+![Validación De Morgan (NAND)](Ejercicio2/evidencias/morgan.png)
 
-![Operación XOR](evidencias/XOR.png)
+![Operación XOR](Ejercicio2/evidencias/XOR.png)
 
 ---
 
