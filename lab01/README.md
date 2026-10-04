@@ -81,7 +81,7 @@ La decodificación de las operaciones y colores se rige por la siguiente tabla:
 
 ### Diagrama de Bloques
 
-![Diagrama de bloques del sistema](Imagenes_diagramas/diagrama_bloques.png)
+![Diagrama de bloques del sistema](evidencias/diagrama_bloques.png)
 *(Nota: Añade aquí la ruta a tu propio diagrama si hicieron uno en draw.io o similar, o simplemente borra esta línea)*
 
 ## Implementación Física (Hardware)
