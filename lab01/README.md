@@ -12,10 +12,6 @@
 En este caso solo en necesario usar en consola el comando make sim, se recominda tener instalado make file si no no funcionara.
 En su defecto se puede ejecutar con los comandos que usualmente se usan.
 
-
-======== SIMULACIÓN CON ICARUS VERILOG ========
-
-
 ## Descripción general
 
 En este laboratorio se implementó una Unidad Aritmético-Lógica (ALU) básica de 4 bits en la tarjeta FPGA Zybo Z7 (Rev. B). El sistema combina lógica combinacional pura para la ejecución de operaciones matemáticas/lógicas y lógica secuencial para el almacenamiento temporal de datos..
