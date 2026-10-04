@@ -125,35 +125,36 @@ El testbench `tb_top_lab01.v` verifica el flujo completo del sistema simulando l
 
 La simulación permite comprobar las capacidades de memoria del sistema y su capacidad de responder asíncronamente a los botones de funciones, visualizando tanto el resultado numérico hexadecimal/binario como los canales rojo, verde y azul individuales del indicador RGB.
 
-graph TD
-    %% Módulo Principal
-    subgraph TopModule ["top_lab01.v (FPGA Zybo Z7)"]
+graph LR
+    subgraph FPGA ["top_lab01.v (FPGA Zybo Z7)"]
         
-        %% Entradas
-        clk["clk (125 MHz - Pin K17)"]
-        SW["SW[3:0] (Interruptores)"]
-        BTN_LOAD["BTN[5] (Guardar B - PMOD JC W15)"]
-        BTN_OP["BTN[4:0] (Botones de Operación)"]
+        subgraph Entradas ["Entradas Físicas"]
+            clk["clk (Pin K17)"]
+            SW["SW[3:0] (Switches)"]
+            BTN5["BTN[5] (PMOD JC W15)"]
+            BTN_OP["BTN[4:0] (Operaciones)"]
+        end
 
-        %% Bloques Internos
-        RegB["Memoria / Registro Operando B<br/><i>(Lógica Secuencial: always @posedge clk)</i>"]
-        ALU["Unidad ALU + Decodificador RGB<br/><i>(Lógica Combinacional: always @*)</i>"]
+        subgraph Logica ["Bloques Internos"]
+            REG_B["Registro Operando B<br/>(Lógica Secuencial)"]
+            ALU["ALU + Decodificador RGB<br/>(Lógica Combinacional)"]
+        end
 
-        %% Salidas
-        LED_OUT["LED[3:0] (Resultado Numérico)"]
-        RGB_OUT["LED6 (Indicador RGB Cromático)"]
+        subgraph Salidas ["Salidas Físicas"]
+            LEDS["LED[3:0] (Resultado)"]
+            RGB["LED6 (Color RGB)"]
+        end
 
-        %% Conexiones
-        clk --> RegB
-        SW -->|Carga de dato B| RegB
-        BTN_LOAD --> RegB
-        
-        SW -->|Lectura A en tiempo real| ALU
-        RegB -->|Operando B (4 bits)| ALU
-        BTN_OP -->|Selección de operación| ALU
+        clk --> REG_B
+        BTN5 --> REG_B
+        SW -->|Carga B| REG_B
 
-        ALU --> LED_OUT
-        ALU --> RGB_OUT
+        SW -->|Dato A en vivo| ALU
+        REG_B -->|Dato B guardado| ALU
+        BTN_OP -->|Selección Op| ALU
+
+        ALU --> LEDS
+        ALU --> RGB
     end
 ### Evidencia
 
