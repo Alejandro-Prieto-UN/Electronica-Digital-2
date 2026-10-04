@@ -125,6 +125,35 @@ El testbench `tb_top_lab01.v` verifica el flujo completo del sistema simulando l
 
 La simulación permite comprobar las capacidades de memoria del sistema y su capacidad de responder asíncronamente a los botones de funciones, visualizando tanto el resultado numérico hexadecimal/binario como los canales rojo, verde y azul individuales del indicador RGB.
 
+graph LR
+    subgraph top_lab01.v [Módulo Top FPGA Zybo Z7]
+        direction LR
+        
+        %% Entradas
+        SW["SW[3:0] (Switches)"]
+        BTN5["BTN[5] (Boton Carga)"]
+        CLK["clk (125 MHz)"]
+        BTNS["BTN[4:0] (Operaciones)"]
+
+        %% Bloques Internos
+        REG["Registro Operando B<br/><i>(Lógica Secuencial)</i>"]
+        ALU["Unidad ALU + RGB<br/><i>(Lógica Combinacional)</i>"]
+
+        %% Salidas
+        LEDS["LED[3:0] (Resultado)"]
+        RGB["LED6 (Color RGB)"]
+
+        %% Conexiones
+        SW -->|4 bits| REG
+        SW -->|4 bits| ALU
+        BTN5 -->|1 bit| REG
+        CLK -->|Reloj| REG
+        REG -->|4 bits (B)| ALU
+        BTNS -->|5 bits| ALU
+
+        ALU -->|4 bits| LEDS
+        ALU -->|3 bits| RGB
+    end
 ### Evidencia
 
 ![Simulación de GTKWave](Ejercicio2/evidencias/gtkwave_sim.png)
