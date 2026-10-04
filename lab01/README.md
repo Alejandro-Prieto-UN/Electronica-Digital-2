@@ -3,6 +3,7 @@
 ## NOMBRES PARTICIPANTES
 Jhohan Stiven Rodriguez Rodriguez
 Alejandro Brandon Prieto Leon
+Ángel Alirio Rivera Amortegui
 
 
 ## Comandos para la simulación
