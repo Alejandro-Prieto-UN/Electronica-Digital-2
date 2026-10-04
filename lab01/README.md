@@ -125,34 +125,35 @@ El testbench `tb_top_lab01.v` verifica el flujo completo del sistema simulando l
 
 La simulación permite comprobar las capacidades de memoria del sistema y su capacidad de responder asíncronamente a los botones de funciones, visualizando tanto el resultado numérico hexadecimal/binario como los canales rojo, verde y azul individuales del indicador RGB.
 
-graph LR
-    subgraph top_lab01.v [Módulo Top FPGA Zybo Z7]
-        direction LR
+graph TD
+    %% Módulo Principal
+    subgraph TopModule ["top_lab01.v (FPGA Zybo Z7)"]
         
         %% Entradas
-        SW["SW[3:0] (Switches)"]
-        BTN5["BTN[5] (Boton Carga)"]
-        CLK["clk (125 MHz)"]
-        BTNS["BTN[4:0] (Operaciones)"]
+        clk["clk (125 MHz - Pin K17)"]
+        SW["SW[3:0] (Interruptores)"]
+        BTN_LOAD["BTN[5] (Guardar B - PMOD JC W15)"]
+        BTN_OP["BTN[4:0] (Botones de Operación)"]
 
         %% Bloques Internos
-        REG["Registro Operando B<br/><i>(Lógica Secuencial)</i>"]
-        ALU["Unidad ALU + RGB<br/><i>(Lógica Combinacional)</i>"]
+        RegB["Memoria / Registro Operando B<br/><i>(Lógica Secuencial: always @posedge clk)</i>"]
+        ALU["Unidad ALU + Decodificador RGB<br/><i>(Lógica Combinacional: always @*)</i>"]
 
         %% Salidas
-        LEDS["LED[3:0] (Resultado)"]
-        RGB["LED6 (Color RGB)"]
+        LED_OUT["LED[3:0] (Resultado Numérico)"]
+        RGB_OUT["LED6 (Indicador RGB Cromático)"]
 
         %% Conexiones
-        SW -->|4 bits| REG
-        SW -->|4 bits| ALU
-        BTN5 -->|1 bit| REG
-        CLK -->|Reloj| REG
-        REG -->|4 bits (B)| ALU
-        BTNS -->|5 bits| ALU
+        clk --> RegB
+        SW -->|Carga de dato B| RegB
+        BTN_LOAD --> RegB
+        
+        SW -->|Lectura A en tiempo real| ALU
+        RegB -->|Operando B (4 bits)| ALU
+        BTN_OP -->|Selección de operación| ALU
 
-        ALU -->|4 bits| LEDS
-        ALU -->|3 bits| RGB
+        ALU --> LED_OUT
+        ALU --> RGB_OUT
     end
 ### Evidencia
 
