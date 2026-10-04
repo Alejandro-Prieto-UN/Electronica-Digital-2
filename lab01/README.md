@@ -1,9 +1,10 @@
 # Laboratorio 01 - Lógica Combinacional, Almacenamiento Temporal y ALU en FPGA
 
-## NOMBRES PARTICIPANTES
-Jhohan Stiven Rodriguez Rodriguez
-Alejandro Brandon Prieto Leon
-Ángel Alirio Rivera Amortegui
+### NOMBRES PARTICIPANTES
+
+- Jhohan Stiven Rodríguez Rodríguez
+- Alejandro Brandon Prieto León
+- Ángel Alirio Rivera Amortegui
 
 
 ## Comandos para la simulación
