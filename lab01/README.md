@@ -79,10 +79,6 @@ La decodificación de las operaciones y colores se rige por la siguiente tabla:
 | **`BTN[4]`** | Resta  | `A - B`   | `LED = A - B`    | Rojo           | `RGB_R`       |
 | *Ninguno*    | Reposo | N/A       | `LED = 0000`     | Apagado        | Ninguno       |
 
-### Diagrama de Bloques
-
-![Diagrama de bloques del sistema](Ejercicio2/evidencias/diagrama_bloques.png)
-*(Nota: Añade aquí la ruta a tu propio diagrama si hicieron uno en draw.io o similar, o simplemente borra esta línea)*
 
 ## Implementación Física (Hardware)
 
