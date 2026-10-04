@@ -125,6 +125,7 @@ El testbench `tb_top_lab01.v` verifica el flujo completo del sistema simulando l
 
 La simulación permite comprobar las capacidades de memoria del sistema y su capacidad de responder asíncronamente a los botones de funciones, visualizando tanto el resultado numérico hexadecimal/binario como los canales rojo, verde y azul individuales del indicador RGB.
 
+```mermaid
 graph LR
     subgraph FPGA ["top_lab01.v (FPGA Zybo Z7)"]
         
@@ -156,6 +157,7 @@ graph LR
         ALU --> LEDS
         ALU --> RGB
     end
+```
 ### Evidencia
 
 ![Simulación de GTKWave](Ejercicio2/evidencias/gtkwave_sim.png)
