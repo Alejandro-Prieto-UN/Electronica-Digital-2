@@ -122,6 +122,7 @@ El testbench `tb_top_lab01.v` verifica el flujo completo del sistema simulando l
 ## Simulación
 
 La simulación permite comprobar las capacidades de memoria del sistema y su capacidad de responder asíncronamente a los botones de funciones, visualizando tanto el resultado numérico hexadecimal/binario como los canales rojo, verde y azul individuales del indicador RGB.
+### Diagrama de bloques
 
 ```mermaid
 graph LR
