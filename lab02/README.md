@@ -87,39 +87,38 @@ El sistema incluye una decodificación visual mediante el LED RGB de la tarjeta 
 
 En el marco de pruebas (`tb_lab02.v`), la simulación de tiempo de corrida valida el correcto funcionamiento síncrono del *datapath* y la respuesta combinacional de la ALU frente a las señales generadas por el archivo de simulación `waveform_lab02.vcd`:
 
-1. **Inicialización ($t = 0 \text{ ns}$ a $20 \text{ ns}$):**
-   * El reloj genera una oscilación periódica con un período de $8 \text{ ns}$ ($125 \text{ MHz}$).
+1. **Inicialización (t = 0 ns a 20 ns):**
+   * El reloj genera una oscilación periódica con un período de 8 ns (125 MHz).
    * Inicialmente `SW` y `BTN` están en cero, por lo cual los registros `A`, `B` y `opcode` inician en sus valores por defecto `0000` y `00`, produciendo un resultado `LED = 4'b0000` y el LED RGB encendido en **Verde** (`RGB_G = 1`).
 
-2. **Carga de Operando A ($t = 30 \text{ ns}$ a $46 \text{ ns}$):**
-   * Se ajusta el bus de entrada a `SW = 4'b1001` (valor decimal $9$) y se habilita el pulso en `BTN[0]`.
-   * En el primer flanco de subida de `clk` donde `BTN[0] = 1`, el valor $9$ es capturado en el registro `A`.
-   * Al liberar el botón (`BTN[0] = 0`), el valor `A = 9` se mantiene latchado en el Flip-Flop.
+2. **Carga de Operando A (t = 30 ns a 46 ns):**
+   * Se ajusta el bus de entrada a `SW = 4'b1001` (valor decimal 9) y se habilita el pulso en `BTN[0]`.
+   * En el primer flanco de subida de `clk` donde `BTN[0] = 1`, el valor 9 es capturado en el registro `A`.
+   * Al liberar el botón (`BTN[0] = 0`), el valor `A = 9` se mantiene guardado en el Flip-Flop.
 
-3. **Carga de Operando B ($t = 66 \text{ ns}$ a $82 \text{ ns}$):**
-   * Se coloca `SW = 4'b0011` (valor decimal $3$) y se presiona `BTN[1]`.
-   * En el flanco activo del reloj, se almacena `B = 3`. 
-   * La ALU procesa automáticamente la operación por defecto (`opcode = 00`, Suma): $9 + 3 = 12$ (`4'b1100`), reflejando este valor en la salida `LED` mientras el LED RGB permanece en **Verde**.
+3. **Carga de Operando B (t = 66 ns a 82 ns):**
+   * Se coloca `SW = 4'b0011` (valor decimal 3) y se presiona `BTN[1]`.
+   * En el flanco activo del reloj, se almacena `B = 3`.
+   * La ALU procesa automáticamente la operación por defecto (`opcode = 00`, Suma): 9 + 3 = 12 (`4'b1100`), reflejando este valor en la salida `LED` mientras el LED RGB permanece en **Verde**.
 
-4. **Verificación de Persistencia ($t = 102 \text{ ns}$):**
-   * Se "limpia" la entrada física colocando `SW = 4'b0000`.
-   * En la gráfica de ondas se evidencia que los registros `A` y `B` conservan inmunes sus valores previos ($9$ y $3$), demostrando la independencia del almacenamiento respecto a las entradas de los conmutadores cuando los botones no están activos.
+4. **Verificación de Persistencia (t = 102 ns):**
+   * Se limpia la entrada física colocando `SW = 4'b0000`.
+   * En la gráfica de ondas se evidencia que los registros `A` y `B` conservan intactos sus valores previos (9 y 3), demostrando la independencia del almacenamiento respecto a las entradas de los conmutadores cuando los botones no están activos.
 
-5. **Transición a Operación Resta ($t = 122 \text{ ns}$):**
+5. **Transición a Operación Resta (t = 122 ns):**
    * Se genera un pulso en `BTN[2]`. La lógica detecta el flanco ascendente y cambia el código a `opcode = 01`.
-   * La ALU actualiza inmediatamente el resultado a $9 - 3 = 6$ (`4'b0110` en `LED`).
+   * La ALU actualiza inmediatamente el resultado a 9 - 3 = 6 (`4'b0110` en `LED`).
    * Las salidas del LED RGB cambian en ese instante a `RGB_R = 1`, `RGB_G = 0`, `RGB_B = 0` (**Rojo**).
 
-6. **Transición a Operación Lógica OR ($t = 168 \text{ ns}$):**
+6. **Transición a Operación Lógica OR (t = 168 ns):**
    * Se presiona `BTN[3]` alterando el bit superior (`opcode = 11`).
-   * El resultado evaluado por la ALU corresponde a $9 \text{ OR } 3$ (`4'b1001 | 4'b0011 = 4'b1011` / decimal $11$).
+   * El resultado evaluado por la ALU corresponde a 9 OR 3 (`4'b1001 | 4'b0011 = 4'b1011` / decimal 11).
    * El LED RGB pasa a encender en **Amarillo** (`RGB_R = 1`, `RGB_G = 1`).
 
-7. **Transición a Operación Lógica AND ($t = 214 \text{ ns}$):**
+7. **Transición a Operación Lógica AND (t = 214 ns):**
    * Se envía un nuevo pulso en `BTN[2]` alternando el bit inferior a `opcode = 10`.
-   * La ALU entrega el resultado $9 \text{ AND } 3$ (`4'b1001 & 4'b0011 = 4'b0001` / decimal $1$).
+   * La ALU entrega el resultado 9 AND 3 (`4'b1001 & 4'b0011 = 4'b0001` / decimal 1).
    * El LED RGB conmuta a la salida en **Azul** (`RGB_B = 1`) hasta la finalización del tiempo de prueba.
-
 ## 10. Evidencia de la implementación funcional en FPGA
 
 
