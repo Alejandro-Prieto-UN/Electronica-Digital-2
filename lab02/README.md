@@ -31,19 +31,39 @@ El funcionamiento general del sistema se divide en tres etapas principales:
    * **LED RGB (`RGB_R`, `RGB_G`, `RGB_B`):** Codifica visualmente la operación seleccionada en la ALU para facilitar la identificación del estado actual del sistema (Verde = Suma, Rojo = Resta, Azul = AND, Amarillo = OR).
 ## 4. Tabla de operaciones implementadas
 
-| Operación | Código de Operación (Opcode) | Descripción |
-| :---: | :---: | :--- |
-|           |       `000`          |             |
-|           |       `001`          |             |
+La Unidad Aritmético Lógica (`alu.v`) evalúa los operandos de 4 bits `A` y `B` mediante lógica combinacional simple pura, guiada por un código de operación (`opcode`) de 2 bits[cite: 2]. A continuación se detallan las operaciones implementadas[cite: 2]:
+
+| Operación | Código de Operación (`opcode`) | Expresión Verilog | Descripción |
+| :---: | :---: | :---: | :--- |
+| **Suma** | `00` | `result = A + B;` | Realiza la adición aritmética entre `A` y `B`. |
+| **Resta** | `01` | `result = A - B;` | Realiza la sustracción aritmética de `A` menos `B`. |
+| **AND** | `10` | `result = A & B;` | Realiza una operación lógica AND bit a bit. |
+| **OR** | `11` | `result = A | B;` | Realiza una operación lógica OR bit a bit. |
+
+---
 
 ## 5. Explicación de la forma en que se almacenan los operandos
 
-<!-- Explica cómo se guardan o cargan los datos/operandos en el sistema (ej. registros, entradas, etc.) -->
+El almacenamiento de los operandos se realiza mediante un esquema de **bus compartido de entrada de datos** conectado a **Flip-Flops de tipo D con habilitador**, los cuales operan de forma síncrona con el flanco de subida del reloj del sistema (`clk` a 125 MHz)[cite: 4].
+
+1. **Multiplexión mediante Bus Único:** Se utilizan únicamente 4 conmutadores físicos (`SW[3:0]`) para ingresar los datos tanto de `A` como de `B`[cite: 4].
+2. **Lógica de Carga (Enable):** 
+   * Al presionar el botón **BTN0** (`if (BTN[0])`), en el siguiente flanco activo del reloj el valor presente en la entrada `SW` se transfiere al registro interno `reg [3:0] A`[cite: 4].
+   * Al presionar el botón **BTN1** (`if (BTN[1])`), el valor de `SW` se transfiere al registro interno `reg [3:0] B`[cite: 4].
+3. **Persistencia:** Una vez liberado el botón correspondiente, las asignaciones no entran en sus bloques de actualización, reteniendo el valor capturado en los Flip-Flops hasta una nueva captura, sin importar si la posición de los conmutadores `SW` cambia posteriormente[cite: 3, 4].
+
+---
 
 ## 6. Explicación de la forma en que se conserva el código de operación
 
-<!-- Explica la lógica o registro utilizado para mantener o retener el opcode seleccionado -->
+Para mantener y seleccionar el código de operación (`reg [1:0] opcode`) de 2 bits sin necesidad de conmutadores dedicados, se implementó un mecanismo de **conmutación de estado persistente por detección de flanco de subida** sobre los botones `BTN2` y `BTN3`[cite: 4]:
 
+1. **Registros Auxiliares para Flanco:** Se emplean las señales auxiliares `btn2_prev` y `btn3_prev` para registrar en cada ciclo de reloj el estado previo de los botones[cite: 4].
+2. **Detección de Flanco de Subida:** En el bloque secuencial controlado por `posedge clk`, la condición `BTN[2] && !btn2_prev` identifica de manera precisa el momento exacto en el que el botón pasa de un estado bajo (`0`) a un estado alto (`1`)[cite: 4].
+3. **Alternancia de Bits (Toggle):** 
+   * Cada pulso detectado en **BTN2** invierte el bit menos significativo: `opcode[0] <= ~opcode[0]`[cite: 4].
+   * Cada pulso detectado en **BTN3** invierte el bit más significativo: `opcode[1] <= ~opcode[1]`[cite: 4].
+4. **Persistencia:** Puesto que las asignaciones solo ocurren durante el ciclo exacto del flanco ascendente, el registro `opcode` mantiene intacto su valor de 2 bits entre pulsaciones, asegurando que la operación seleccionada se conserve estable mientras la ALU opera[cite: 4].
 ## 7. Tabla con los colores utilizados para identificar cada operación mediante el LED RGB
 
 | Operación | Código (Opcode) | Color del LED RGB | R | G | B |
