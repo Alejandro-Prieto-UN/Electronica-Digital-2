@@ -58,7 +58,7 @@ El almacenamiento de los operandos se realiza mediante un esquema de **bus compa
 Para mantener y seleccionar el código de operación (`reg [1:0] opcode`) de 2 bits sin necesidad de conmutadores dedicados, se implementó el mecanismo de **conmutación de estado persistente por detección de flanco de subida** sobre los botones `BTN2` y `BTN3`:
 
 1. **Registros Auxiliares para Flanco:** Se emplean las señales auxiliares `btn2_prev` y `btn3_prev` para registrar en cada ciclo de reloj el estado previo de los botones.
-2. **Detección de Flanco de Subida:** En el bloque secuencial controlado por `posedge clk`, la condición `BTN[2] && !btn2_prev` identifica de manera precisa el momento exacto en el que el botón pasa de un estado bajo (`0`) a un estado alto (`1`).
+2. **Detección de Flanco de Subida:** En el bloque secuencial controlado por `posedge clk`, la condición `BTN[2]` identifica de manera precisa el momento exacto en el que el botón pasa de un estado bajo (`0`) a un estado alto (`1`).
 3. **Alternancia de Bits (Toggle):** 
    * Cada pulso detectado en **BTN2** invierte el bit menos significativo: `opcode[0] <= ~opcode[0]`.
    * Cada pulso detectado en **BTN3** invierte el bit más significativo: `opcode[1] <= ~opcode[1]`.
