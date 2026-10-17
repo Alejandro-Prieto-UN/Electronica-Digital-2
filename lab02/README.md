@@ -18,7 +18,7 @@ El funcionamiento general del sistema se divide en tres etapas principales:
    * Los operandos `A` y `B` se capturan en registros internos mediante sincronización por reloj (125 MHz). Al presionar el botón `BTN0`, el valor actual de los switches se almacena en el registro `A`. Al presionar el botón `BTN1`, el valor se almacena en el registro `B`.
    * El código de operación (`opcode` de 2 bits) se gestiona de forma persistente a través de los botones `BTN2` y `BTN3`, los cuales alternan los bits individualmente mediante detectores de flanco de subida.
 
-2. **Procesamiento de Datos (ALU):**
+## 2. **Procesamiento de Datos (ALU):**
    * Los registros de los operandos `A` y `B`, junto con el registro de `opcode`, se entregan al módulo combinacional de la ALU (`alu.v`).
    * La ALU ejecuta la operación seleccionada de forma instantánea según el `opcode`:
      * `00`: Suma (`A + B`)
@@ -26,7 +26,7 @@ El funcionamiento general del sistema se divide en tres etapas principales:
      * `10`: Operación lógica AND bit a bit (`A & B`)
      * `11`: Operación lógica OR bit a bit (`A | B`)
 
-3. **Visualización de Resultados (Salidas):**
+# 3. **Visualización de Resultados (Salidas):**
    * **LEDs Verdes (`LED0` - `LED3`):** Muestran directamente el resultado de 4 bits calculado por la ALU.
    * **LED RGB (`RGB_R`, `RGB_G`, `RGB_B`):** Codifica visualmente la operación seleccionada en la ALU para facilitar la identificación del estado actual del sistema (Verde = Suma, Rojo = Resta, Azul = AND, Amarillo = OR).
 ## 4. Tabla de operaciones implementadas
