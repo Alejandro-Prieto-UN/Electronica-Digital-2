@@ -31,7 +31,7 @@ El funcionamiento general del sistema se divide en tres etapas principales:
    * **LED RGB (`RGB_R`, `RGB_G`, `RGB_B`):** Codifica visualmente la operación seleccionada en la ALU para facilitar la identificación del estado actual del sistema (Verde = Suma, Rojo = Resta, Azul = AND, Amarillo = OR).
 ## 4. Tabla de operaciones implementadas
 
-La Unidad Aritmético Lógica (`alu.v`) evalúa los operandos de 4 bits `A` y `B` mediante lógica combinacional, guiada por el código de operación (`opcode`) de 2 bits[cite: 2]. A continuación se detallan las operaciones implementadas[cite: 2]:
+La Unidad Aritmético Lógica (`alu.v`) evalúa los operandos de 4 bits `A` y `B` mediante lógica combinacional, guiada por el código de operación (`opcode`) de 2 bits. A continuación se detallan las operaciones implementadas:
 
 | Operación | Código de Operación (`opcode`) | Expresión | Descripción |
 | :---: | :---: | :---: | :--- |
