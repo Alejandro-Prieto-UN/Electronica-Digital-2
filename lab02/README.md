@@ -43,26 +43,26 @@ La Unidad Aritmético Lógica (`alu.v`) evalúa los operandos de 4 bits `A` y `B
 
 ## 5. Explicación de la forma en que se almacenan los operandos
 
-El almacenamiento de los operandos se realiza mediante un esquema de **bus compartido de entrada de datos** conectado a **Flip-Flops de tipo D con habilitador**, los cuales operan de forma síncrona con el flanco de subida del reloj del sistema (`clk` a 125 MHz)[cite: 4].
+El almacenamiento de los operandos se realiza mediante un esquema de **bus compartido de entrada de datos** conectado a **Flip-Flops de tipo D con habilitador**, los cuales operan de forma síncrona con el flanco de subida del reloj del sistema (`clk` a 125 MHz).
 
-1. **Multiplexión mediante Bus Único:** Se utilizan únicamente 4 conmutadores físicos (`SW[3:0]`) para ingresar los datos tanto de `A` como de `B`[cite: 4].
+1. **Multiplexión mediante Bus Único:** Se utilizan únicamente 4 conmutadores físicos (`SW[3:0]`) para ingresar los datos tanto de `A` como de `B`.
 2. **Lógica de Carga (Enable):** 
-   * Al presionar el botón **BTN0** (`if (BTN[0])`), en el siguiente flanco activo del reloj el valor presente en la entrada `SW` se transfiere al registro interno `reg [3:0] A`[cite: 4].
-   * Al presionar el botón **BTN1** (`if (BTN[1])`), el valor de `SW` se transfiere al registro interno `reg [3:0] B`[cite: 4].
-3. **Persistencia:** Una vez liberado el botón correspondiente, las asignaciones no entran en sus bloques de actualización, reteniendo el valor capturado en los Flip-Flops hasta una nueva captura, sin importar si la posición de los conmutadores `SW` cambia posteriormente[cite: 3, 4].
+   * Cuando se presiona el botón **BTN0** (`if (BTN[0])`), en el siguiente flanco activo del reloj el valor presente en la entrada `SW` se transfiere al registro interno `reg [3:0] A`.
+   * Al presionar el botón **BTN1** (`if (BTN[1])`), el valor de `SW` se transfiere al registro interno `reg [3:0] B`.
+3. **Persistencia:** Una vez liberado el botón correspondiente, las asignaciones no entran en sus bloques de actualización, reteniendo el valor capturado en los Flip-Flops hasta una nueva captura, sin importar si la posición de los conmutadores `SW` cambia posteriormente.
 
 ---
 
 ## 6. Explicación de la forma en que se conserva el código de operación
 
-Para mantener y seleccionar el código de operación (`reg [1:0] opcode`) de 2 bits sin necesidad de conmutadores dedicados, se implementó un mecanismo de **conmutación de estado persistente por detección de flanco de subida** sobre los botones `BTN2` y `BTN3`[cite: 4]:
+Para mantener y seleccionar el código de operación (`reg [1:0] opcode`) de 2 bits sin necesidad de conmutadores dedicados, se implementó el mecanismo de **conmutación de estado persistente por detección de flanco de subida** sobre los botones `BTN2` y `BTN3`:
 
-1. **Registros Auxiliares para Flanco:** Se emplean las señales auxiliares `btn2_prev` y `btn3_prev` para registrar en cada ciclo de reloj el estado previo de los botones[cite: 4].
-2. **Detección de Flanco de Subida:** En el bloque secuencial controlado por `posedge clk`, la condición `BTN[2] && !btn2_prev` identifica de manera precisa el momento exacto en el que el botón pasa de un estado bajo (`0`) a un estado alto (`1`)[cite: 4].
+1. **Registros Auxiliares para Flanco:** Se emplean las señales auxiliares `btn2_prev` y `btn3_prev` para registrar en cada ciclo de reloj el estado previo de los botones.
+2. **Detección de Flanco de Subida:** En el bloque secuencial controlado por `posedge clk`, la condición `BTN[2] && !btn2_prev` identifica de manera precisa el momento exacto en el que el botón pasa de un estado bajo (`0`) a un estado alto (`1`).
 3. **Alternancia de Bits (Toggle):** 
-   * Cada pulso detectado en **BTN2** invierte el bit menos significativo: `opcode[0] <= ~opcode[0]`[cite: 4].
-   * Cada pulso detectado en **BTN3** invierte el bit más significativo: `opcode[1] <= ~opcode[1]`[cite: 4].
-4. **Persistencia:** Puesto que las asignaciones solo ocurren durante el ciclo exacto del flanco ascendente, el registro `opcode` mantiene intacto su valor de 2 bits entre pulsaciones, asegurando que la operación seleccionada se conserve estable mientras la ALU opera[cite: 4].
+   * Cada pulso detectado en **BTN2** invierte el bit menos significativo: `opcode[0] <= ~opcode[0]`.
+   * Cada pulso detectado en **BTN3** invierte el bit más significativo: `opcode[1] <= ~opcode[1]`.
+4. **Persistencia:** Puesto que las asignaciones solo ocurren durante el ciclo exacto del flanco ascendente, el registro `opcode` mantiene intacto su valor de 2 bits entre pulsaciones, asegurando que la operación seleccionada se conserve estable mientras la ALU opera.
 ## 7. Tabla con los colores utilizados para identificar cada operación mediante el LED RGB
 
 | Operación | Código (Opcode) | Color del LED RGB | R | G | B |
