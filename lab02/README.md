@@ -63,65 +63,65 @@ Para mantener y seleccionar el código de operación (`reg [1:0] opcode`) de 2 b
    * Cada pulso detectado en **BTN2** invierte el bit menos significativo: `opcode[0] <= ~opcode[0]`.
    * Cada pulso detectado en **BTN3** invierte el bit más significativo: `opcode[1] <= ~opcode[1]`.
 4. **Persistencia:** Puesto que las asignaciones solo ocurren durante el ciclo exacto del flanco ascendente, el registro `opcode` mantiene intacto su valor de 2 bits entre pulsaciones, asegurando que la operación seleccionada se conserve estable mientras la ALU opera.
+   
 ## 7. Tabla con los colores utilizados para identificar cada operación mediante el LED RGB
 
-El sistema incluye una decodificación visual mediante el LED RGB de la tarjeta Zybo Z7 para indicar de forma clara e instantánea la operación activa en la ALU[cite: 4, 5]. Las señales de control `RGB_R`, `RGB_G` y `RGB_B` son asignadas por el bloque combinacional en `top_lab02.v` en función del valor retenido en `opcode`[cite: 4]:
+El sistema incluye una decodificación visual mediante el LED RGB de la tarjeta Zybo Z7 para indicar de forma clara e instantánea la operación activa en la ALU. Las señales de control `RGB_R`, `RGB_G` y `RGB_B` son asignadas por el bloque combinacional en `top_lab02.v` en función del valor retenido en `opcode`:
 
 | Operación | Código (`opcode`) | Color del LED RGB | `RGB_R` | `RGB_G` | `RGB_B` | Descripción del estado |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Suma** | `00` | **Verde** | `0` | `1` | `0` | Indica la realización de adición ($A + B$)[cite: 2, 4]. |
-| **Resta** | `01` | **Rojo** | `1` | `0` | `0` | Indica la realización de sustracción ($A - B$)[cite: 2, 4]. |
-| **AND** | `10` | **Azul** | `0` | `0` | `1` | Indica la realización de operación lógica AND ($A \ \& \ B$)[cite: 2, 4]. |
-| **OR** | `11` | **Amarillo** | `1` | `1` | `0` | Mezcla de canales Rojo y Verde para operación OR ($A \ \vert \ B$)[cite: 2, 4]. |
+| **Suma** | `00` | **Verde** | `0` | `1` | `0` | Indica la realización de adición ($A + B$). |
+| **Resta** | `01` | **Rojo** | `1` | `0` | `0` | Indica la realización de sustracción ($A - B$). |
+| **AND** | `10` | **Azul** | `0` | `0` | `1` | Indica la realización de operación lógica AND ($A \ \& \ B$). |
+| **OR** | `11` | **Amarillo** | `1` | `1` | `0` | Mezcla de canales Rojo y Verde para operación OR ($A \ \vert \ B$). |
 
 ---
 ## 8. Capturas de GTKWave
 
 ### 8.1. Simulación General
-![Simulación GTKWave Generales](ruta/a/tu/imagen_gtkwave_1.png)
+
 
 ### 8.2. Casos de Prueba Especificos
-![Casos de Prueba](ruta/a/tu/imagen_gtkwave_2.png)
+
 
 ## 9. Explicación del comportamiento observado durante la simulación
 
-En el marco de pruebas (`tb_lab02.v`), la simulación de tiempo de corrida valida el correcto funcionamiento síncrono del *datapath* y la respuesta combinacional de la ALU frente a las señales generadas por el archivo de simulación `waveform_lab02.vcd`[cite: 3]:
+En el marco de pruebas (`tb_lab02.v`), la simulación de tiempo de corrida valida el correcto funcionamiento síncrono del *datapath* y la respuesta combinacional de la ALU frente a las señales generadas por el archivo de simulación `waveform_lab02.vcd`:
 
 1. **Inicialización ($t = 0 \text{ ns}$ a $20 \text{ ns}$):**
-   * El reloj genera una oscilación periódica con un período de $8 \text{ ns}$ ($125 \text{ MHz}$)[cite: 3].
-   * Inicialmente `SW` y `BTN` están en cero, por lo cual los registros `A`, `B` y `opcode` inician en sus valores por defecto `0000` y `00`, produciendo un resultado `LED = 4'b0000` y el LED RGB encendido en **Verde** (`RGB_G = 1`)[cite: 3, 4].
+   * El reloj genera una oscilación periódica con un período de $8 \text{ ns}$ ($125 \text{ MHz}$).
+   * Inicialmente `SW` y `BTN` están en cero, por lo cual los registros `A`, `B` y `opcode` inician en sus valores por defecto `0000` y `00`, produciendo un resultado `LED = 4'b0000` y el LED RGB encendido en **Verde** (`RGB_G = 1`).
 
 2. **Carga de Operando A ($t = 30 \text{ ns}$ a $46 \text{ ns}$):**
-   * Se ajusta el bus de entrada a `SW = 4'b1001` (valor decimal $9$) y se habilita el pulso en `BTN[0]`[cite: 3].
-   * En el primer flanco de subida de `clk` donde `BTN[0] = 1`, el valor $9$ es capturado en el registro `A`[cite: 4].
-   * Al liberar el botón (`BTN[0] = 0`), el valor `A = 9` se mantiene latchado en el Flip-Flop[cite: 3, 4].
+   * Se ajusta el bus de entrada a `SW = 4'b1001` (valor decimal $9$) y se habilita el pulso en `BTN[0]`.
+   * En el primer flanco de subida de `clk` donde `BTN[0] = 1`, el valor $9$ es capturado en el registro `A`.
+   * Al liberar el botón (`BTN[0] = 0`), el valor `A = 9` se mantiene latchado en el Flip-Flop.
 
 3. **Carga de Operando B ($t = 66 \text{ ns}$ a $82 \text{ ns}$):**
-   * Se coloca `SW = 4'b0011` (valor decimal $3$) y se presiona `BTN[1]`[cite: 3].
-   * En el flanco activo del reloj, se almacena `B = 3`[cite: 4]. 
-   * La ALU procesa automáticamente la operación por defecto (`opcode = 00`, Suma): $9 + 3 = 12$ (`4'b1100`), reflejando este valor en la salida `LED` mientras el LED RGB permanece en **Verde**[cite: 3, 4].
+   * Se coloca `SW = 4'b0011` (valor decimal $3$) y se presiona `BTN[1]`.
+   * En el flanco activo del reloj, se almacena `B = 3`. 
+   * La ALU procesa automáticamente la operación por defecto (`opcode = 00`, Suma): $9 + 3 = 12$ (`4'b1100`), reflejando este valor en la salida `LED` mientras el LED RGB permanece en **Verde**.
 
 4. **Verificación de Persistencia ($t = 102 \text{ ns}$):**
-   * Se limpia la entrada física colocando `SW = 4'b0000`[cite: 3].
-   * En la gráfica de ondas se evidencia que los registros `A` y `B` conservan inmunes sus valores previos ($9$ y $3$), demostrando la independencia del almacenamiento respecto a las entradas de los conmutadores cuando los botones no están activos[cite: 3, 4].
+   * Se "limpia" la entrada física colocando `SW = 4'b0000`.
+   * En la gráfica de ondas se evidencia que los registros `A` y `B` conservan inmunes sus valores previos ($9$ y $3$), demostrando la independencia del almacenamiento respecto a las entradas de los conmutadores cuando los botones no están activos.
 
 5. **Transición a Operación Resta ($t = 122 \text{ ns}$):**
-   * Se genera un pulso en `BTN[2]`. La lógica detecta el flanco ascendente y cambia el código a `opcode = 01`[cite: 3, 4].
-   * La ALU actualiza inmediatamente el resultado a $9 - 3 = 6$ (`4'b0110` en `LED`)[cite: 3].
-   * Las salidas del LED RGB cambian en ese instante a `RGB_R = 1`, `RGB_G = 0`, `RGB_B = 0` (**Rojo**)[cite: 3, 4].
+   * Se genera un pulso en `BTN[2]`. La lógica detecta el flanco ascendente y cambia el código a `opcode = 01`.
+   * La ALU actualiza inmediatamente el resultado a $9 - 3 = 6$ (`4'b0110` en `LED`).
+   * Las salidas del LED RGB cambian en ese instante a `RGB_R = 1`, `RGB_G = 0`, `RGB_B = 0` (**Rojo**).
 
 6. **Transición a Operación Lógica OR ($t = 168 \text{ ns}$):**
-   * Se presiona `BTN[3]` alterando el bit superior (`opcode = 11`)[cite: 3, 4].
-   * El resultado evaluado por la ALU corresponde a $9 \text{ OR } 3$ (`4'b1001 | 4'b0011 = 4'b1011` / decimal $11$)[cite: 3].
-   * El LED RGB pasa a encender en **Amarillo** (`RGB_R = 1`, `RGB_G = 1`)[cite: 3, 4].
+   * Se presiona `BTN[3]` alterando el bit superior (`opcode = 11`).
+   * El resultado evaluado por la ALU corresponde a $9 \text{ OR } 3$ (`4'b1001 | 4'b0011 = 4'b1011` / decimal $11$).
+   * El LED RGB pasa a encender en **Amarillo** (`RGB_R = 1`, `RGB_G = 1`).
 
 7. **Transición a Operación Lógica AND ($t = 214 \text{ ns}$):**
-   * Se envía un nuevo pulso en `BTN[2]` alternando el bit inferior a `opcode = 10`[cite: 3, 4].
-   * La ALU entrega el resultado $9 \text{ AND } 3$ (`4'b1001 & 4'b0011 = 4'b0001` / decimal $1$)[cite: 3].
-   * El LED RGB conmuta a la salida en **Azul** (`RGB_B = 1`) hasta la finalización del tiempo de prueba (`$finish`)[cite: 3, 4].
+   * Se envía un nuevo pulso en `BTN[2]` alternando el bit inferior a `opcode = 10`.
+   * La ALU entrega el resultado $9 \text{ AND } 3$ (`4'b1001 & 4'b0011 = 4'b0001` / decimal $1$).
+   * El LED RGB conmuta a la salida en **Azul** (`RGB_B = 1`) hasta la finalización del tiempo de prueba (`$finish`).
 
 ## 10. Evidencia de la implementación funcional en FPGA
 
-![Foto o GIF de la FPGA funcionando](ruta/a/tu/imagen_fpga.jpg)
 
 <!-- Agrega una breve explicación o descripción de la prueba sobre la tarjeta FPGA -->
