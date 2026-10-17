@@ -102,7 +102,7 @@ En el marco de pruebas (`tb_lab02.v`), la simulación de tiempo de corrida valid
    * La ALU procesa automáticamente la operación por defecto (`opcode = 00`, Suma): 9 + 3 = 12 (`4'b1100`), reflejando este valor en la salida `LED` mientras el LED RGB permanece en **Verde**.
 
 4. **Verificación de Persistencia (t = 102 ns):**
-   * Se limpia la entrada física colocando `SW = 4'b0000`.
+   * Se "limpia" la entrada física colocando `SW = 4'b0000`.
    * En la gráfica de ondas se evidencia que los registros `A` y `B` conservan intactos sus valores previos (9 y 3), demostrando la independencia del almacenamiento respecto a las entradas de los conmutadores cuando los botones no están activos.
 
 5. **Transición a Operación Resta (t = 122 ns):**
