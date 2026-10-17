@@ -38,7 +38,7 @@ La Unidad Aritmético Lógica (`alu.v`) evalúa los operandos de 4 bits `A` y `B
 | **Suma** | `00` | `result = A + B;` | Realiza la adición aritmética entre `A` y `B`. |
 | **Resta** | `01` | `result = A - B;` | Realiza la sustracción aritmética de `A` menos `B`. |
 | **AND** | `10` | `result = A & B;` | Realiza una operación lógica AND bit a bit. |
-| **OR** | `11` | result = A | B;` | Realiza una operación lógica OR bit a bit. |
+| **OR** | `11` | `result = A | `B;` | Realiza una operación lógica OR bit a bit. |
 
 ---
 
