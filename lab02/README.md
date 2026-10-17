@@ -1,4 +1,4 @@
-# Laboratorio 01 - Diseño, simulación e implementación de una ALU de 4 bits
+# Laboratorio 02 - Diseño, simulación e implementación de una ALU de 4 bits
 
 ### NOMBRES PARTICIPANTES
 
@@ -9,16 +9,26 @@
 
 ## 1. Explicación general del funcionamiento del sistema
 
-<!-- Escribe aquí una breve descripción general de lo que hace el sistema completo -->
+El sistema desarrollado corresponde a una **Unidad Aritmético Lógica (ALU) de 4 bits** implementada sobre la tarjeta de desarrollo **Zybo Z7-20** (FPGA Zynq-7000). El objetivo principal del sistema es procesar dos operandos de 4 bits (`A` y `B`) mediante cuatro operaciones distintas (Suma, Resta, AND y OR), mostrando el resultado en un conjunto de LEDs y el estado de la operación mediante un LED RGB.
 
-## 2. Descripción de la arquitectura propuesta
+El funcionamiento general del sistema se divide en tres etapas principales:
 
-<!-- Describe aquí los bloques principales y la arquitectura del diseño -->
+1. **Captura y Almacenamiento de Datos (Entradas):**
+   * El sistema utiliza los 4 conmutadores de la tarjeta (`SW0` a `SW3`) como un bus de entrada de datos común.
+   * Los operandos `A` y `B` se capturan en registros internos mediante sincronización por reloj (125 MHz). Al presionar el botón `BTN0`, el valor actual de los switches se almacena en el registro `A`. Al presionar el botón `BTN1`, el valor se almacena en el registro `B`.
+   * El código de operación (`opcode` de 2 bits) se gestiona de forma persistente a través de los botones `BTN2` y `BTN3`, los cuales alternan los bits individualmente mediante detectores de flanco de subida.
 
-## 3. Explicación de los módulos desarrollados
+2. **Procesamiento de Datos (ALU):**
+   * Los registros de los operandos `A` y `B`, junto con el registro de `opcode`, se entregan al módulo combinacional de la ALU (`alu.v`).
+   * La ALU ejecuta la operación seleccionada de forma instantánea según el `opcode`:
+     * `00`: Suma (`A + B`)
+     * `01`: Resta (`A - B`)
+     * `10`: Operación lógica AND bit a bit (`A & B`)
+     * `11`: Operación lógica OR bit a bit (`A | B`)
 
-<!-- Describe cada uno de los módulos en Verilog/SystemVerilog desarrollados -->
-
+3. **Visualización de Resultados (Salidas):**
+   * **LEDs Verdes (`LED0` - `LED3`):** Muestran directamente el resultado de 4 bits calculado por la ALU.
+   * **LED RGB (`RGB_R`, `RGB_G`, `RGB_B`):** Codifica visualmente la operación seleccionada en la ALU para facilitar la identificación del estado actual del sistema (Verde = Suma, Rojo = Resta, Azul = AND, Amarillo = OR).
 ## 4. Tabla de operaciones implementadas
 
 | Operación | Código de Operación (Opcode) | Descripción |
