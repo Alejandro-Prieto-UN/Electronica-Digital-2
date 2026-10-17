@@ -70,11 +70,10 @@ El sistema incluye una decodificación visual mediante el LED RGB de la tarjeta 
 
 | Operación | Código (`opcode`) | Color del LED RGB | `RGB_R` | `RGB_G` | `RGB_B` | Descripción del estado |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Suma** | `00` | **Verde** | `0` | `1` | `0` | Indica la realización de adición ($A + B$). |
-| **Resta** | `01` | **Rojo** | `1` | `0` | `0` | Indica la realización de sustracción ($A - B$). |
-| **AND** | `10` | **Azul** | `0` | `0` | `1` | Indica la realización de operación lógica AND ($A \ \& \ B$). |
-| **OR** | `11` | **Amarillo** | `1` | `1` | `0` | Mezcla de canales Rojo y Verde para operación OR ($A \ \vert \ B$). |
-
+| **Suma** | `00` | **Verde** | `0` | `1` | `0` | Indica la realización de adición (A + B). |
+| **Resta** | `01` | **Rojo** | `1` | `0` | `0` | Indica la realización de sustracción (A - B). |
+| **AND** | `10` | **Azul** | `0` | `0` | `1` | Indica la realización de operación lógica AND (A & B). |
+| **OR** | `11` | **Amarillo** | `1` | `1` | `0` | Mezcla de canales Rojo y Verde para operación OR (A \| B). |
 ---
 ## 8. Capturas de GTKWave
 
