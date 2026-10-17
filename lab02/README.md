@@ -119,7 +119,7 @@ En el marco de pruebas (`tb_lab02.v`), la simulación de tiempo de corrida valid
 7. **Transición a Operación Lógica AND ($t = 214 \text{ ns}$):**
    * Se envía un nuevo pulso en `BTN[2]` alternando el bit inferior a `opcode = 10`.
    * La ALU entrega el resultado $9 \text{ AND } 3$ (`4'b1001 & 4'b0011 = 4'b0001` / decimal $1$).
-   * El LED RGB conmuta a la salida en **Azul** (`RGB_B = 1`) hasta la finalización del tiempo de prueba (`$finish`).
+   * El LED RGB conmuta a la salida en **Azul** (`RGB_B = 1`) hasta la finalización del tiempo de prueba.
 
 ## 10. Evidencia de la implementación funcional en FPGA
 
