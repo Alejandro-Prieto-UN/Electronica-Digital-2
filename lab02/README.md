@@ -5,7 +5,6 @@
 - Jhohan Stiven Rodríguez Rodríguez
 - Alejandro Brandon Prieto León
 - Ángel Alirio Rivera Amortegui
-# Informe de Práctica de Laboratorio - Electrónica Digital II
 
 ## 1. Explicación general del funcionamiento del sistema
 
