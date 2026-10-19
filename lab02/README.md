@@ -121,5 +121,46 @@ En el marco de pruebas (`tb_lab02.v`), la simulación de tiempo de corrida valid
    * El LED RGB conmuta a la salida en **Azul** (`RGB_B = 1`) hasta la finalización del tiempo de prueba.
 ## 10. Evidencia de la implementación funcional en FPGA
 
+A continuación se presentan las evidencias fotográficas de la implementación y pruebas funcionales del sistema sobre la tarjeta de desarrollo **Zybo Z7-20**, validando la captura de operandos, la ejecución de operaciones por la ALU y el cambio de color en el LED RGB según el estado[cite: 8, 9, 10, 11, 12, 13].
 
-<!-- Agrega una breve explicación o descripción de la prueba sobre la tarjeta FPGA -->
+---
+
+### 10.1. Carga de Operandos
+
+#### Carga del Operando A (`A = 0110`)
+Se configuran los switches en la posición `0110` (6 en decimal) y se presiona el botón `BTN0` para registrar el valor en `A`[cite: 13].
+
+![Carga del Operando A](A=0110.jpeg)
+
+#### Carga del Operando B (`B = 0001`)
+Se configuran los switches en la posición `0001` (1 en decimal) y se presiona el botón `BTN1` para registrar el valor en `B`[cite: 12].
+
+![Carga del Operando B](B=0001.jpeg)
+
+---
+
+### 10.2. Validación de Operaciones de la ALU y LED RGB
+
+#### Operación Suma (`opcode = 00`)
+* **Resultado:** $6 + 1 = 7$ (`4'b0111` visible en los LEDs verdes `LED0` a `LED2`)[cite: 11].
+* **Indicador RGB:** Color **Verde** (`RGB_G = 1`)[cite: 4, 11].
+
+![Prueba Operación Suma](Suma.jpeg)
+
+#### Operación Resta (`opcode = 01`)
+* **Resultado:** $6 - 1 = 5$ (`4'b0101` visible en los LEDs verdes `LED0` y `LED2`)[cite: 10].
+* **Indicador RGB:** Color **Rojo** (`RGB_R = 1`)[cite: 4, 10].
+
+![Prueba Operación Resta](Resta.jpeg)
+
+#### Operación AND Bit a Bit (`opcode = 10`)
+* **Resultado:** `0110` AND `0001` = `0000` (todos los LEDs de salida apagados)[cite: 9].
+* **Indicador RGB:** Color **Azul** (`RGB_B = 1`)[cite: 4, 9].
+
+![Prueba Operación AND](And.jpeg)
+
+#### Operación OR Bit a Bit (`opcode = 11`)
+* **Resultado:** `0110` OR `0001` = `0011` (decimal 7: LEDs `LED0` a `LED2` encendidos)[cite: 8].
+* **Indicador RGB:** Color **Amarillo** (`RGB_R = 1`, `RGB_G = 1`)[cite: 4, 8].
+
+![Prueba Operación OR](Or.jpeg)
