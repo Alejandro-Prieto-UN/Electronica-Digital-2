@@ -79,9 +79,17 @@ El sistema incluye una decodificación visual mediante el LED RGB de la tarjeta 
 
 ### 8.1. Simulación General
 
+### 8.2. Casos de Prueba Específicos
 
-### 8.2. Casos de Prueba Especificos
+#### Caso de Prueba 1: Verificación de Selección de Operación (`Caso1.jpeg`)
+Muestra la verificación del estado físico de la FPGA durante la ejecución del caso de prueba 1, donde se valida la respuesta de las salidas del sistema ante la conmutación del código de operación.
 
+![Caso de Prueba 1](Caso1.jpeg)
+
+#### Caso de Prueba 2: Verificación de Entrada de Datos y Pulsación de Botones (`Caso2.jpeg`)
+Muestra la captura durante la aplicación de los estímulos de entrada mediante la pulsación del botón correspondiente, validando el almacenamiento correcto en el registro objetivo.
+
+![Caso de Prueba 2](Caso2.jpeg)
 
 ## 9. Explicación del comportamiento observado durante la simulación
 
