@@ -79,6 +79,8 @@ El sistema incluye una decodificación visual mediante el LED RGB de la tarjeta 
 
 ### 8.1. Simulación General
 
+![Simulacion general](Gtkwave.jpeg)
+
 ### 8.2. Casos de Prueba Específicos
 
 #### Caso de Prueba 1: Verificación de Selección de Operación (`Caso1.jpeg`)
