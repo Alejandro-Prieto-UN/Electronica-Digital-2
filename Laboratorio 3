@@ -5,3 +5,11 @@
 - Jhohan Stiven Rodríguez Rodríguez
 - Alejandro Brandon Prieto León
 - Ángel Alirio Rivera Amortegui
+
+## Código fuente de todos los módulos (`src/`)
+
+## Archivo `top.v`
+
+## Testbench completo (`tb_top_lab03.v`)
+
+## Archivo `.vcd` de simulación
