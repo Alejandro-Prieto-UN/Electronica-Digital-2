@@ -505,8 +505,59 @@ initial begin
 end
 ```
 # Descripción del sistema
+El presente proyecto implementa un sistema digital modular en la tarjeta FPGA Digilent Zybo Z7 (basada en el SoC Zynq-7000). El sistema permite procesar datos de 4 bits mediante una Unidad Aritmético Lógica (ALU) e inspeccionar sus resultados en un display de 7 segmentos de 4 dígitos controlado por el chip TM1637.
+
+El flujo de funcionamiento del sistema integra los siguientes componentes:
+- **Banco de Registros:** Un bloque de memoria interna secuencial de 4 posiciones ($R0$ a $R3$) de 4 bits cada una. Incluye un indicador de estado en un LED RGB que cambia de color según el registro seleccionado para escritura ($R0$: Rojo, $R1$: Verde, $R2$: Azul, $R3$: Blanco).
+- **Selector Combinacional de Registros:** Un módulo secuencial/combinacional que, al pulsar `BTN2`, avanza a través de 6 combinaciones prefijadas de parejas de operandos ($A$ y $B$) y retroalimenta los LEDs verdes (`LED[3:0]`) para indicar visualmente los registros activos.
+- **Unidad Aritmético Lógica (ALU):** Un módulo combinacional puro que ejecuta 8 operaciones distintas (sumas, restas, operaciones lógicas AND/OR/XOR/NOT y desplazamientos a la izquierda y derecha) seleccionadas mediante los switches `SW[2:0]`.
+- **Controlador de Visualización TM1637:** Un subsistema encargado de congelar (*latch*) el resultado de la ALU al presionar `BTN3` y transmitirlo de forma serial mediante un protocolo propietario de 2 hilos (`CLK` y `DIO` bidireccional) al display externo.
+
+---
+
 # Explicación de la arquitectura modular
+La arquitectura del proyecto adopta un diseño estrictamente modular y jerárquico descrita en Verilog HDL. Las responsabilidades de cada módulo en la carpeta `src/` se dividen de la siguiente manera:
+
+1. **`reg_bank.v` (Banco de Registros):**
+   - **Lógica Secuencial:** Registra escrituras síncronas en el flanco de subida de `clk` (125 MHz). Al detectar un flanco positivo en `BTN0`, incrementa el puntero de escritura `write_ptr` ($0 \rightarrow 1 \rightarrow 2 \rightarrow 3 \rightarrow 0$). Al presionar `BTN1`, guarda el bus de entrada `SW[3:0]` en el registro apuntado.
+   - **Lógica Combinacional:** Implementa una lectura asíncrona permanente de dos puertos independientes (`data_out_a` y `data_out_b`) a partir de las direcciones enviadas por el selector.
+
+2. **`comb_selector.v` (Selector de Registros):**
+   - Mantiene un contador interno (`comb_index`) de 0 a 5 que avanza al presionar `BTN2` con detección de flanco de subida.
+   - Decodifica combinacionalmente el índice actual para asignar las direcciones de lectura (`read_addr_a` y `read_addr_b`) hacia el banco de registros, activando simultáneamente la máscara de LEDs verdes correspondiente a la pareja en uso.
+
+3. **`alu.v` (Unidad Aritmético Lógica):**
+   - Corresponde a un bloque puramente combinacional evaluado en un bloque `always @(*)`.
+   - Según el valor en `opcode[2:0]`, selecciona en un bloque `case` la operación matemática o lógica a ejecutar entre los operandos `A` y `B`, entregando el bus `result` de 4 bits sin generar latches involuntarios gracias a su cláusula `default`.
+
+4. **`display_tm1637.v` (Controlador de Pantalla):**
+   - Aísla la temporización rápida de la FPGA respecto al display mediante un divisor de reloj por *tick* (100 kHz).
+   - Administra la interfaz serial a través de una Máquina de Estados Finitos (FSM) que gestiona el protocolo serie y la línea de datos tri-state (`dio_display`).
+
+5. **`top.v` (Módulo Principal / Top-Level):**
+   - Actúa como la entidad superior (*wrapper*) que instancia e interconecta los buses internos entre `reg_bank`, `comb_selector`, `alu` y `display_tm1637`.
+   - Contiene el decodificador de color para el LED RGB según el registro de escritura activo y asigna directamente las señales físicas a los pines de la FPGA Zybo Z7 descritos en el archivo `.xdc`.
+
+---
 # Descripción de la estrategia de visualización utilizada
+El controlador del display TM1637 resuelve el reto de conectar un circuito digital de alta velocidad (125 MHz) con un periférico serial lento usando dos técnicas principales:
+
+1. **Mecanismo de Retención (*Latch*) por Pulsador:**
+   - Para evitar que la pantalla cambie constantemente durante la manipulación de switches o la selección de registros, el módulo incluye un sincronizador de dos flip-flops (`btn_sync`) y un detector de flanco ascendente sobre el botón de ejecución (`BTN3`).
+   - Solo cuando se presiona `BTN3`, el resultado actual de la ALU (`alu_result`) se almacena en el registro interno `latched_result`, manteniendo una lectura estable en el display.
+
+2. **Generación de Temporización por Tick (100 kHz):**
+   - En lugar de usar relojes derivados (*gated clocks*) que producen problemas de *skew* y *timing* en síntesis, el módulo utiliza un contador síncrono `tick_cnt` que genera un pulso de habilitación (*tick*) cada 1250 ciclos del reloj del sistema ($125 \text{ MHz} / 1250 = 100 \text{ kHz}$).
+
+3. **Máquina de Estados Finitos (FSM) y Línea Bidireccional Tri-State:**
+   - La transmisión serial se estructura mediante una FSM de 12 estados (`S_START0` a `S_STOP2`).
+   - La FSM genera las condiciones de inicio (START) y parada (STOP) del protocolo TM1637, conmuta la señal de reloj serie (`clk_display`) y desplaza el byte de datos bit por bit (LSB primero).
+   - Para la línea de datos `dio_display`, se utiliza una salida con control de alta impedancia (Tri-state):
+     ```verilog
+     assign dio_display = dio_oe ? dio_out : 1'bz;
+     ```
+     Durante el noveno pulso de reloj (`S_ACK_REL`), la FPGA deshabilita su buffer de salida (`dio_oe = 0`), liberando la línea para permitir recibir la señal de confirmación (ACK) enviada por el chip TM1637 antes de finalizar la trama.
+   - Los valores hexadecimales de 4 bits retenidos se convierten mediante una función decodificadora (`seg7_map`) a su representación de 7 segmentos equivalente para su correcto dibujado en el dígito de la pantalla.
 # Capturas de GTKWave
 # Evidencia de funcionamiento en FPGA
 # Análisis de resultados
