@@ -491,7 +491,8 @@ endmodule
 ```
 ##  4. Archivo .vcd
 ```
-
+$dumpfile("sim.vcd");
+$dumpvars(0, tb_top);
 ```
 # Descripción del sistema
 # Explicación de la arquitectura modular
