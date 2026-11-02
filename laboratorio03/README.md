@@ -79,7 +79,7 @@ module reg_bank (
     assign data_out_b = registers[read_addr_b];
 
 endmodule
-
+```
 ### 2.2. Selector Combinacional de Registros (`src/comb_selector.v`)
 
 ```verilog
