@@ -491,8 +491,18 @@ endmodule
 ```
 ##  4. Archivo .vcd
 ```
-$dumpfile("sim.vcd");
-$dumpvars(0, tb_top);
+En esta sección se detalla la configuración utilizada para la generación del archivo de simulación de ondas `.vcd` (Value Change Dump), el cual permite auditar el comportamiento temporal de las señales en GTKWave.
+
+El archivo de volcado generado durante la simulación se almacena en la raíz del proyecto bajo el nombre:
+- `laboratorio03.vcd` (o `sim.vcd`)
+
+Dentro del módulo de prueba (`tb_top_lab03.v`), la directiva encargada de instanciar la creación de dicho archivo es:
+
+```verilog
+initial begin
+    $dumpfile("laboratorio03.vcd");
+    $dumpvars(0, tb_top_lab03);
+end
 ```
 # Descripción del sistema
 # Explicación de la arquitectura modular
