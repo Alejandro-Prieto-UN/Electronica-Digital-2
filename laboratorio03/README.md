@@ -558,7 +558,9 @@ El controlador del display TM1637 resuelve el reto de conectar un circuito digit
      ```
      Durante el noveno pulso de reloj (`S_ACK_REL`), la FPGA deshabilita su buffer de salida (`dio_oe = 0`), liberando la línea para permitir recibir la señal de confirmación (ACK) enviada por el chip TM1637 antes de finalizar la trama.
    - Los valores hexadecimales de 4 bits retenidos se convierten mediante una función decodificadora (`seg7_map`) a su representación de 7 segmentos equivalente para su correcto dibujado en el dígito de la pantalla.
-# Capturas de GTKWave
+# Captura de GTKWave
+
+![Simulacion para el top](Simulacion_del_top.png)
 # Evidencia de funcionamiento en FPGA
 
 A continuación se presentan los registros en video que demuestran la validación funcional del sistema en la tarjeta FPGA Digilent Zybo Z7:
