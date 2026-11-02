@@ -568,7 +568,7 @@ Demostración del almacenamiento de datos en los registros R0-R3, indicación de
 
 <video src="vid01.mp4" controls width="100%"></video>
 
-> **Video 1:** Carga de datos en memoria e indicación visual con LEDs verdes y RGB.
+> **Video 1:** Carga de datos en memoria e indicación visual con LEDs verdes y RGB (guardado en vid01.mp4).
 
 ---
 
@@ -577,7 +577,7 @@ Demostración de selección de operaciones con los switches SW[2:0], retención 
 
 <video src="vid02.mp4" controls width="100%"></video>
 
-> **Video 2:** Cálculo de la ALU y actualización del display TM1637.
+> **Video 2:** Cálculo de la ALU y actualización del display TM1637 (guardado en vid02.mp4).
 
 # Análisis de resultados
 1. **Eficiencia y Modularidad del Diseño:**
