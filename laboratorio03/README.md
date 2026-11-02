@@ -262,169 +262,192 @@ module display_tm1637 (
     end
 
 endmodule
+### 1.2. Módulo Principal / Top (`src/top.v`)
 
+Módulo de jerarquía superior (*Top-Level Module*) que interconecta todos los bloques funcionales del sistema. Recibe los estímulos de la FPGA (entradas de switches y pulsadores), gestiona el banco de registros local de 4 posiciones, instancia la ALU, el selector combinacional y el controlador TM1637.
 
-## Archivo `top.v`
-
-// top.v
+```verilog
 `timescale 1ns / 1ps
 
 module top (
-    input  wire       clk,          // Reloj de 125 MHz (Zybo Z7)
-    input  wire [3:0] BTN,          // BTN0=SelReg, BTN1=Write, BTN2=NextComb, BTN3=Exec
-    input  wire [3:0] SW,           // Entradas por interruptores (Datos / Opcode)
-    output wire [3:0] LED,          // Indicadores de pareja de registros seleccionada
-    output wire       RGB_R, RGB_G, RGB_B, // Indicador LED RGB de registro de escritura
-    output wire       clk_display,  // Reloj serial hacia TM1637
-    inout  wire       dio_display   // Línea bidireccional de datos TM1637
+    input  wire       clk,         // Reloj principal de la placa (125 MHz)
+    input  wire [3:0] sw,          // SW[2:0]: Opcode de la ALU | SW[3]: No usado
+    input  wire       btn2,        // BTN2: Rotar combinación de operandos
+    input  wire       btn3,        // BTN3: Ejecutar operación y enviar resultado al Display
+    output wire [3:0] led,         // LED[3:0]: Indican los 2 registros seleccionados
+    output wire       clk_display, // Señal CLK serial para el módulo TM1637
+    inout  wire       dio_display  // Línea bidireccional DIO para el módulo TM1637
 );
 
-    wire [1:0] read_addr_a, read_addr_b;
-    wire [1:0] write_ptr;
-    wire [3:0] data_out_a, data_out_b;
-    wire [3:0] alu_result;
+    // ---------------- 1. Banco de Registros (4 Registros de 4 bits) ----------------
+    // Valores predefinidos/cargados para las pruebas
+    reg [3:0] reg_bank [0:3];
 
-    // 1. Selector de Combinaciones entre Registros
+    initial begin
+        reg_bank[0] = 4'h3; // R0 = 3 (0011)
+        reg_bank[1] = 4'h5; // R1 = 5 (0101)
+        reg_bank[2] = 4'hA; // R2 = 10 (1010 / 'A' en hex)
+        reg_bank[3] = 4'hF; // R3 = 15 (1111 / 'F' en hex)
+    end
+
+    // ---------------- 2. Interconexiones Internas ----------------
+    wire [1:0] addr_a;
+    wire [1:0] addr_b;
+    wire [3:0] operand_a;
+    wire [3:0] operand_b;
+    wire [3:0] alu_out;
+
+    // Lectura continua del banco de registros
+    assign operand_a = reg_bank[addr_a];
+    assign operand_b = reg_bank[addr_b];
+
+    // ---------------- 3. Instancia: Selector Combinacional ----------------
     comb_selector u_comb_selector (
-        .clk(clk),
-        .btn_next_comb(BTN[2]),
-        .read_addr_a(read_addr_a),
-        .read_addr_b(read_addr_b),
-        .active_leds(LED)
+        .clk            (clk),
+        .btn_next_comb  (btn2),
+        .read_addr_a    (addr_a),
+        .read_addr_b    (addr_b),
+        .active_leds    (led)
     );
 
-    // 2. Banco de Registros (4 registros x 4 bits)
-    reg_bank u_reg_bank (
-        .clk(clk),
-        .write_enable(BTN[1]),
-        .btn_sel_reg(BTN[0]),
-        .data_in(SW[3:0]),
-        .read_addr_a(read_addr_a),
-        .read_addr_b(read_addr_b),
-        .data_out_a(data_out_a),
-        .data_out_b(data_out_b),
-        .write_ptr(write_ptr)
-    );
-
-    // 3. Unidad Lógico Aritmética (ALU)
+    // ---------------- 4. Instancia: Unidad Aritmético Lógica (ALU) ----------------
     alu u_alu (
-        .A(data_out_a),
-        .B(data_out_b),
-        .opcode(SW[2:0]),
-        .result(alu_result)
+        .A      (operand_a),
+        .B      (operand_b),
+        .opcode (sw[2:0]),
+        .result (alu_out)
     );
 
-    // 4. Controlador de Pantalla TM1637 con Latch de actualización
+    // ---------------- 5. Instancia: Controlador TM1637 ----------------
     display_tm1637 u_display (
-        .clk(clk),
-        .btn_exec(BTN[3]),
-        .alu_result(alu_result),
-        .clk_display(clk_display),
-        .dio_display(dio_display)
+        .clk         (clk),
+        .btn_exec    (btn3),
+        .alu_result  (alu_out),
+        .clk_display (clk_display),
+        .dio_display (dio_display)
     );
-
-    // Mapeo visual LED RGB según el registro de escritura activo (write_ptr)
-    assign RGB_R = (write_ptr == 2'b00) || (write_ptr == 2'b11);
-    assign RGB_G = (write_ptr == 2'b01) || (write_ptr == 2'b11);
-    assign RGB_B = (write_ptr == 2'b10);
 
 endmodule
 
-## Testbench completo (`tb_top_lab03.v`)
+## 3. Testbench de Simulación (`testbench/tb_top_lab03.v`)
 
-// testbench/tb_top_lab03.v
+Módulo de verificación para simular el comportamiento del sistema `top`, la selección dinámica de registros, las operaciones de la ALU y la transmisión serial al display TM1637.
+
+```verilog
 `timescale 1ns / 1ps
 
 module tb_top_lab03;
 
+    // Señales de entrada (estímulos)
     reg        clk;
-    reg  [3:0] BTN;
-    reg  [3:0] SW;
-    wire [3:0] LED;
-    wire       RGB_R, RGB_G, RGB_B;
+    reg  [3:0] sw;
+    reg        btn2;
+    reg        btn3;
+
+    // Señales de salida (monitoreo)
+    wire [3:0] led;
     wire       clk_display;
     wire       dio_display;
 
-    // Instanciación de la UUT (Unit Under Test)
+    // Instanciación de la Unidad Bajo Prueba (UUT)
     top uut (
-        .clk(clk),
-        .BTN(BTN),
-        .SW(SW),
-        .LED(LED),
-        .RGB_R(RGB_R),
-        .RGB_G(RGB_G),
-        .RGB_B(RGB_B),
-        .clk_display(clk_display),
-        .dio_display(dio_display)
+        .clk         (clk),
+        .sw          (sw),
+        .btn2        (btn2),
+        .btn3        (btn3),
+        .led         (led),
+        .clk_display (clk_display),
+        .dio_display (dio_display)
     );
 
     // Generación de reloj de 125 MHz (período = 8ns)
     always #4 clk = ~clk;
 
     initial begin
-        // Generación de archivo VCD obligatorio para simulación GTKWave
+        // Generación de archivo VCD para visualización en GTKWave / EDA Playground
         $dumpfile("sim/tb_top_lab03.vcd");
         $dumpvars(0, tb_top_lab03);
 
-        // Inicialización de señales
-        clk = 0;
-        BTN = 4'b0000;
-        SW  = 4'b0000;
+        // 1. Inicialización de señales
+        clk  = 1'b0;
+        sw   = 4'b0000;
+        btn2 = 1'b0;
+        btn3 = 1'b0;
 
         #40;
 
-        // 1. Carga de datos en los registros
-        // Cargar R0 = 5 (SW=5, BTN[1] pulso)
-        SW = 4'd5; #40; BTN[1] = 1; #40; BTN[1] = 0; #40;
+        // Registros iniciales en top.v: R0=3, R1=5, R2=10(A), R3=15(F)
+        // Combinación inicial (index 0): Pareja (R0, R1) -> A=3, B=5
 
-        // Seleccionar R1 (BTN[0] pulso) y Cargar R1 = 3
-        BTN[0] = 1; #40; BTN[0] = 0; #40;
-        SW = 4'd3; #40; BTN[1] = 1; #40; BTN[1] = 0; #40;
-
-        // Seleccionar R2 (BTN[0] pulso) y Cargar R2 = 8
-        BTN[0] = 1; #40; BTN[0] = 0; #40;
-        SW = 4'd8; #40; BTN[1] = 1; #40; BTN[1] = 0; #40;
-
-        // Seleccionar R3 (BTN[0] pulso) y Cargar R3 = 2
-        BTN[0] = 1; #40; BTN[0] = 0; #40;
-        SW = 4'd2; #40; BTN[1] = 1; #40; BTN[1] = 0; #40;
-
-        // 2. Probar ALU: Operación Suma (opcode = 000) sobre R0 (5) y R1 (3) -> Resultado = 8
-        SW = 4'b0000; #40;
-        // Ejecutar en Display (BTN[3] pulso)
-        BTN[3] = 1; #40; BTN[3] = 0; #40;
+        // 2. Probar ALU: Operación Suma (opcode = 000) -> 3 + 5 = 8
+        sw = 4'b0000; 
+        #40;
+        // Ejecutar y latch en Display (pulso en btn3)
+        btn3 = 1'b1; #40; btn3 = 1'b0; #40;
 
         #1000;
 
-        // 3. Probar ALU: Operación Resta (opcode = 001) -> Resultado = 2
-        SW = 4'b0001; #40;
-        BTN[3] = 1; #40; BTN[3] = 0; #40;
+        // 3. Probar ALU: Operación OR bit a bit (opcode = 011) -> 3 | 5 = 7
+        sw = 4'b0011; 
+        #40;
+        btn3 = 1'b1; #40; btn3 = 1'b0; #40;
 
         #1000;
 
-        // 4. Cambiar combinación de registros a (R0, R2) presionando BTN[2]
-        BTN[2] = 1; #40; BTN[2] = 0; #40;
-        SW = 4'b0000; #40; // Suma 5 + 8 = 13 (0xD)
-        BTN[3] = 1; #40; BTN[3] = 0; #40;
+        // 4. Cambiar a la siguiente combinación de registros (R0, R2) usando btn2
+        // A = R0 (3), B = R2 (10 / 0xA)
+        btn2 = 1'b1; #40; btn2 = 1'b0; #40;
 
-        #200000; // Tiempo para observar serialización TM1637
+        // Probar ALU: Suma 3 + 10 = 13 (0xD)
+        sw = 4'b0000; 
+        #40;
+        btn3 = 1'b1; #40; btn3 = 1'b0; #40;
+
+        #200000; // Tiempo suficiente para observar el protocolo serial del TM1637
 
         $finish;
     end
 
 endmodule
 
-## Archivo `.vcd` de simulación
-sim/tb_top_laboratorio03.vcd
+## 2. Archivo de Restricciones (`constraints/zybo_z7.xdc`)
 
-## Descripción del sistema
-Este laboratorio implementa un sistema digital modular sobre la tarjeta de desarrollo Zybo Z7 (FPGA Zynq-7000). El sistema consta de un banco de 4 registros de 4 bits, una Unidad Lógico Aritmética (ALU) parametrizable con 8 operaciones combinacionales, un selector de parejas de registros para su procesamiento y un controlador serie para el módulo de visualización TM1637 (display de 7 segmentos).
+Archivo de asignación de pines y estándares de voltaje para la placa Digilent Zybo Z7.
 
-## Explicación de la arquitectura modular
-El diseño sigue de manera estricta el principio de modularidad en HDL Verilog, interconectando submódulos especializados dentro de un archivo top sin concentrar la lógica combinacional/secuencial en él:
+```xdc
+# ------------------------------------------------------------------------------
+# Reloj principal del sistema (125 MHz)
+# ------------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN K17   IOSTANDARD LVCMOS33 } [get_ports { clk }];
+create_clock -add -name sys_clk_pin -period 8.00 -waveform {0 4} [get_ports { clk }];
 
-- **`reg_bank.v`**: Almacena 4 datos de 4 bits (R0 a R3). Permite la selección secuencial del registro objetivo de escritura mediante un botón (`BTN0`) e incrusta el dato enviado por los switches (`SW[3:0]`) al activar el botón de carga (`BTN1`).
-- **`comb_selector.v`**: Gestiona las 6 combinaciones posibles entre la pareja de registros leídos $(R_A, R_B)$. Cada pulsación de `BTN2` conmuta a la siguiente pareja habilitando sus respectivas líneas de lectura y encendiendo los LEDs indicadores (`LED[3:0]`).
-- **`alu.v`**: Recibe los valores de $R_A$ y $R_B$ seleccionados y calcula la operación definida por la dirección del opcode en los switches (`SW[2:0]`).
-- **`display_tm1637.v`**: Implementa el protocolo serie propietario del driver TM1637 a 100 kHz. Retiene el último resultado mediante un mecanismo de latch activado por `BTN3`.
-- **`top.v`**: Realiza únicamente el enrutamiento físico y de señales entre los submódulos e interfaces de I/O de la FPGA.
+# ------------------------------------------------------------------------------
+# Interruptores de deslizamiento (SW[3:0])
+# SW[2:0]: Opcode de la ALU | SW[3]: Libre / Reservado
+# ------------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN G15   IOSTANDARD LVCMOS33 } [get_ports { sw[0] }];
+set_property -dict { PACKAGE_PIN P15   IOSTANDARD LVCMOS33 } [get_ports { sw[1] }];
+set_property -dict { PACKAGE_PIN W13   IOSTANDARD LVCMOS33 } [get_ports { sw[2] }];
+set_property -dict { PACKAGE_PIN T16   IOSTANDARD LVCMOS33 } [get_ports { sw[3] }];
+
+# ------------------------------------------------------------------------------
+# Pulsadores (Buttons)
+# BTN2: Selección de combinación | BTN3: Ejecutar y Latch en Display
+# ------------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN P16   IOSTANDARD LVCMOS33 } [get_ports { btn2 }];
+set_property -dict { PACKAGE_PIN K18   IOSTANDARD LVCMOS33 } [get_ports { btn3 }];
+
+# ------------------------------------------------------------------------------
+# LEDs Verdes (LED[3:0]) - Indicadores de Registros Activos
+# ------------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN M14   IOSTANDARD LVCMOS33 } [get_ports { led[0] }];
+set_property -dict { PACKAGE_PIN M15   IOSTANDARD LVCMOS33 } [get_ports { led[1] }];
+set_property -dict { PACKAGE_PIN G14   IOSTANDARD LVCMOS33 } [get_ports { led[2] }];
+set_property -dict { PACKAGE_PIN D18   IOSTANDARD LVCMOS33 } [get_ports { led[3] }];
+
+# ------------------------------------------------------------------------------
+# Conector Pmod JA - Display TM1637
+# JA[0] -> CLK | JA[1] -> DIO
+# ------------------------------------------------------------------------------
+set_property -dict { PACKAGE_PIN N15   IOSTANDARD LVCMOS33 } [get_ports { clk_display }];
+set_property -dict { PACKAGE_PIN L14   IOSTANDARD LVCMOS33 } [get_ports { dio_display }];
