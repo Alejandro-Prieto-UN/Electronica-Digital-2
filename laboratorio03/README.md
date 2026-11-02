@@ -12,7 +12,7 @@ El sistema modular está dividido en unidades funcionales independientes encarga
 
 ### 1.1. Unidad Aritmético Lógica (`src/alu.v`)
 
-Módulo combinacional puro encargada de ejecutar las operaciones aritméticas y lógicas seleccionadas mediante la señal `opcode[2:0]`.
+Módulo combinacional puro encargado de ejecutar las operaciones aritméticas y lógicas seleccionadas mediante la señal `opcode[2:0]`.
 
 ```verilog
 `timescale 1ns / 1ps
@@ -32,7 +32,7 @@ module alu (
             3'b010:  result = A & B;       // AND bit a bit
             3'b011:  result = A | B;       // OR bit a bit
             3'b100:  result = A ^ B;       // XOR bit a bit
-            3'b01:  result = ~A;          // NOT en Operando A
+            3 me:    result = ~A;          // NOT en Operando A
             3'b110:  result = A << 1;      // Desplazamiento lógico izquierda (Shift Left)
             3'b111:  result = A >> 1;      // Desplazamiento lógico derecha (Shift Right)
             default: result = 4'b0000;     // Estado por defecto de seguridad
@@ -40,6 +40,8 @@ module alu (
     end
 
 endmodule
+
+### 1.2. Selector combinacional de registros
 
 `timescale 1ns / 1ps
 
@@ -67,7 +69,7 @@ module comb_selector (
         end
     end
 
-    // 2. LÓGICA COMBINACIONAL: Mapeo de índice a direcciones y LEDs
+    ### 1.2.2. LÓGICA COMBINACIONAL: Mapeo de índice a direcciones y LEDs
     always @(*) begin
         case (comb_index)
             3'd0: begin // Pareja (R0, R1)
@@ -109,6 +111,8 @@ module comb_selector (
     end
 
 endmodule
+
+### 1.3. Controlador de visualización
 
 `timescale 1ns / 1ps
 
@@ -262,7 +266,7 @@ module display_tm1637 (
     end
 
 endmodule
-### 1.2. Módulo Principal / Top (`src/top.v`)
+## 1.2. Módulo Principal / Top (`src/top.v`)
 
 Módulo de jerarquía superior (*Top-Level Module*) que interconecta todos los bloques funcionales del sistema. Recibe los estímulos de la FPGA (entradas de switches y pulsadores), gestiona el banco de registros local de 4 posiciones, instancia la ALU, el selector combinacional y el controlador TM1637.
 
