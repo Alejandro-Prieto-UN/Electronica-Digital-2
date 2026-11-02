@@ -6,8 +6,15 @@
 - Alejandro Brandon Prieto León
 - Ángel Alirio Rivera Amortegui
 
-## Código fuente de todos los módulos (`src/`)
-// src/alu.v
+## 1. Código Fuente de los Módulos (`src/`)
+
+El sistema modular está dividido en unidades funcionales independientes encargadas del procesamiento aritmético, la selección dinámica de operandos, la gestión del banco de registros y el protocolo de visualización.
+
+### 1.1. Unidad Aritmético Lógica (`src/alu.v`)
+
+Módulo combinacional puro encargada de ejecutar las operaciones aritméticas y lógicas seleccionadas mediante la señal `opcode[2:0]`.
+
+```verilog
 `timescale 1ns / 1ps
 
 module alu (
@@ -23,44 +30,44 @@ module alu (
             3'b000:  result = A + B;       // Suma
             3'b001:  result = A - B;       // Resta
             3'b010:  result = A & B;       // AND bit a bit
-            3 me011:  result = A | B;       // OR bit a bit
+            3'b011:  result = A | B;       // OR bit a bit
             3'b100:  result = A ^ B;       // XOR bit a bit
-            3'b101:  result = ~A;          // NOT en Operando A
-            3'b110:  result = A << 1;      // Desplazamiento lógico izquierda
-            3'b111:  result = A >> 1;      // Desplazamiento lógico derecha
-            default: result = 4'b0000;     // Estado de seguridad por defecto
+            3'b01:  result = ~A;          // NOT en Operando A
+            3'b110:  result = A << 1;      // Desplazamiento lógico izquierda (Shift Left)
+            3'b111:  result = A >> 1;      // Desplazamiento lógico derecha (Shift Right)
+            default: result = 4'b0000;     // Estado por defecto de seguridad
         endcase
     end
 
 endmodule
 
-// src/comb_selector.v
 `timescale 1ns / 1ps
 
 module comb_selector (
-    input  wire       clk,            // Reloj principal (125 MHz)
+    input  wire       clk,            // Reloj principal de 125 MHz
     input  wire       btn_next_comb,  // BTN2: Cambia a la siguiente combinación
-    output reg  [1:0] read_addr_a,    // Dirección del registro para Operando A
-    output reg  [1:0] read_addr_b,    // Dirección del registro para Operando B
-    output reg  [3:0] active_leds     // Salida hacia los LEDs (LED[3:0])
+    output reg  [1:0] read_addr_a,    // Dirección de lectura para Operando A
+    output reg  [1:0] read_addr_b,    // Dirección de lectura para Operando B
+    output reg  [3:0] active_leds     // Salida hacia LEDs verdes (LED[3:0])
 );
 
+    // Contador interno para indexar las 6 combinaciones posibles
     reg [2:0] comb_index = 3'b000;
     reg btn_next_prev = 1'b0;
 
-    // Lógica secuencial: Avanzar el contador de combinación con BTN2
+    // 1. LÓGICA SECUENCIAL: Avanzar el contador con flanco de subida en BTN2
     always @(posedge clk) begin
         btn_next_prev <= btn_next_comb;
 
         if (btn_next_comb && !btn_next_prev) begin
             if (comb_index == 3'd5)
-                comb_index <= 3'b000;
+                comb_index <= 3'b000;  // Reinicia al llegar a la última combinación
             else
                 comb_index <= comb_index + 1'b1;
         end
     end
 
-    // Lógica combinacional: Mapeo del índice a direcciones y LEDs
+    // 2. LÓGICA COMBINACIONAL: Mapeo de índice a direcciones y LEDs
     always @(*) begin
         case (comb_index)
             3'd0: begin // Pareja (R0, R1)
@@ -84,7 +91,7 @@ module comb_selector (
                 active_leds = 4'b0110;
             end
             3'd4: begin // Pareja (R1, R3)
-                read_addr_a = 2'b01;
+                read_addr_a = 2 me;
                 read_addr_b = 2'b11;
                 active_leds = 4'b1010;
             end
@@ -103,146 +110,159 @@ module comb_selector (
 
 endmodule
 
-// src/display_tm1637.v
 `timescale 1ns / 1ps
 
 module display_tm1637 (
-    input  wire       clk,          // 125 MHz
-    input  wire       btn_exec,     // BTN3: Ejecuta latcheo y actualización
-    input  wire [3:0] alu_result,
+    input  wire       clk,          // Reloj del sistema (125 MHz)
+    input  wire       btn_exec,     // BTN3: Ejecución de la operación y Latch
+    input  wire [3:0] alu_result,   // Resultado procesado por la ALU
     output reg        clk_display = 1'b1,
     inout  wire       dio_display
 );
 
-    // Latch del resultado con BTN3
+    // ---------------- 1. Latch del resultado con BTN3 ----------------
     reg [1:0] btn_sync = 2'b00;
     reg       btn_prev = 1'b0;
     reg [3:0] latched_result = 4'h0;
 
     always @(posedge clk) begin
-        btn_sync <= {btn_sync[0], btn_exec};
+        btn_sync <= {btn_sync[0], btn_exec};   // Sincronizador de 2 FFs
         btn_prev <= btn_sync[1];
         if (btn_sync[1] && !btn_prev)
             latched_result <= alu_result;
     end
 
-    // Decodificador hex -> 7 segmentos
+    // ---------------- 2. Decodificador Hexadecimal a 7 Segmentos ----------------
     function [7:0] seg7_map(input [3:0] d);
         case (d)
-            4'h0: seg7_map = 8'h3F; 4'h1: seg7_map = 8'h06;
-            4'h2: seg7_map = 8'h5B; 4'h3: seg7_map = 8'h4F;
-            4'h4: seg7_map = 8'h66; 4'h5: seg7_map = 8'h6D;
-            4'h6: seg7_map = 8'h7D; 4'h7: seg7_map = 8'h07;
-            4'h8: seg7_map = 8'h7F; 4'h9: seg7_map = 8'h6F;
-            4'hA: seg7_map = 8'h77; 4'hB: seg7_map = 8'h7C;
-            4'hC: seg7_map = 8'h39; 4'hD: seg7_map = 8'h5E;
-            4'hE: seg7_map = 8'h79; 4'hF: seg7_map = 8'h71;
+            4'h0: seg7_map = 8'h3F;
+            4'h1: seg7_map = 8'h06;
+            4'h2: seg7_map = 8'h5B;
+            4'h3: seg7_map = 8'h4F;
+            4'h4: seg7_map = 8'h66;
+            4'h5: seg7_map = 8'h6D;
+            4'h6: seg7_map = 8'h7D;
+            4'h7: seg7_map = 8'h07;
+            4'h8: seg7_map = 8'h7F;
+            4'h9: seg7_map = 8'h6F;
+            4'hA: seg7_map = 8'h77;
+            4'hB: seg7_map = 8'h7C;
+            4'hC: seg7_map = 8'h39;
+            4'hD: seg7_map = 8'h5E;
+            4'hE: seg7_map = 8'h79;
+            4'hF: seg7_map = 8'h71;
             default: seg7_map = 8'h00;
         endcase
     endfunction
 
-    // Tick de habilitación (100 kHz)
+    // ---------------- 3. Generación de Tick de Temporización (100 kHz) ----------------
     reg [10:0] tick_cnt = 11'd0;
     wire       tick = (tick_cnt == 11'd1249);
     always @(posedge clk)
         tick_cnt <= tick ? 11'd0 : tick_cnt + 1'b1;
 
-    // Buffer Tri-state DIO
+    // ---------------- 4. Control Tri-state para DIO ----------------
     reg dio_out = 1'b1;
     reg dio_oe  = 1'b1;
     assign dio_display = dio_oe ? dio_out : 1'bz;
 
-    // Máquina de estados I2C-like para TM1637
-    localparam S_START0 = 4'd0, S_START1 = 4'd1, S_LOAD = 4'd2,
-               S_SETUP  = 4'd3, S_HIGH   = 4'd4, S_FALL = 4'd5,
-               S_ACK_REL= 4'd6, S_ACK_H  = 4'd7, S_ACK_L= 4'd8,
-               S_ACK_TAKE=4'd9, S_STOP1  = 4'd10,S_STOP2= 4'd11;
+    // ---------------- 5. Máquina de Estados Finitos (FSM) ----------------
+    localparam S_START0   = 4'd0,
+               S_START1   = 4'd1,
+               S_LOAD     = 4'd2,
+               S_SETUP    = 4'd3,
+               S_HIGH     = 4'd4,
+               S_FALL     = 4'd5,
+               S_ACK_REL  = 4'd6,
+               S_ACK_H    = 4'd7,
+               S_ACK_L    = 4'd8,
+               S_ACK_TAKE = 4'd9,
+               S_STOP1    = 4'd10,
+               S_STOP2    = 4'd11;
 
     reg [3:0] st        = S_START0;
     reg [1:0] byte_idx  = 2'd0;
     reg [7:0] shift_reg = 8'd0;
     reg [2:0] bit_cnt   = 3'd0;
-    reg [7:0] cur_byte;
 
+    reg [7:0] cur_byte;
     always @(*) begin
         case (byte_idx)
-            2'd0:    cur_byte = 8'h44;                    // Dirección fija
-            2'd1:    cur_byte = 8'hC0;                    // Dígito 1
-            2'd2:    cur_byte = seg7_map(latched_result); // Dato codificado
-            default: cur_byte = 8 me8F;                    // Encendido + brillo
+            2'd0:    cur_byte = 8'h44;                       // Comando: Dirección Fija
+            2'd1:    cur_byte = 8'hC0;                       // Dirección Digito 1
+            2'd2:    cur_byte = seg7_map(latched_result);    // Segmentos cargados
+            default: cur_byte = 8'h8F;                       // Control: Display ON, brillo máx
         endcase
     end
 
     always @(posedge clk) begin
         if (tick) begin
             case (st)
-                S_START0: begin dio_oe <= 1'b1; clk_display <= 1'b1; dio_out <= 1'b1; st <= S_START1; end
-                S_START1: begin dio_out <= 1'b0; st <= S_LOAD; end
-                S_LOAD:   begin clk_display <= 1'b0; shift_reg <= cur_byte; bit_cnt <= 3'd0; st <= S_SETUP; end
-                S_SETUP:  begin dio_out <= shift_reg[0]; st <= S_HIGH; end
-                S_HIGH:   begin clk_display <= 1'b1; st <= S_FALL; end
-                S_FALL:   begin clk_display <= 1'b0; shift_reg <= {1'b0, shift_reg[7:1]};
-                                if (bit_cnt == 3'd7) st <= S_ACK_REL;
-                                else begin bit_cnt <= bit_cnt + 1'b1; st <= S_SETUP; end
-                          end
-                S_ACK_REL:begin dio_oe <= 1'b0; st <= S_ACK_H; end
-                S_ACK_H:  begin clk_display <= 1'b1; st <= S_ACK_L; end
-                S_ACK_L:  begin clk_display <= 1'b0; st <= S_ACK_TAKE; end
-                S_ACK_TAKE:begin dio_oe <= 1 me1; dio_out <= 1'b0;
-                                 if (byte_idx == 2'd1) begin byte_idx <= 2'd2; st <= S_LOAD; end
-                                 else st <= S_STOP1;
-                           end
-                S_STOP1:  begin clk_display <= 1'b1; st <= S_STOP2; end
-                S_STOP2:  begin dio_out <= 1'b1; byte_idx <= (byte_idx == 2'd3) ? 2'd0 : byte_idx + 1'b1; st <= S_START0; end
-                default:  st <= S_START0;
+                S_START0: begin
+                    dio_oe <= 1'b1; clk_display <= 1'b1; dio_out <= 1'b1;
+                    st <= S_START1;
+                end
+                S_START1: begin
+                    dio_out <= 1'b0;
+                    st <= S_LOAD;
+                end
+                S_LOAD: begin
+                    clk_display <= 1'b0;
+                    shift_reg   <= cur_byte;
+                    bit_cnt     <= 3'd0;
+                    st <= S_SETUP;
+                end
+                S_SETUP: begin
+                    dio_out <= shift_reg[0];
+                    st <= S_HIGH;
+                end
+                S_HIGH: begin
+                    clk_display <= 1'b1;
+                    st <= S_FALL;
+                end
+                S_FALL: begin
+                    clk_display <= 1'b0;
+                    shift_reg   <= {1'b0, shift_reg[7:1]};
+                    if (bit_cnt == 3'd7) st <= S_ACK_REL;
+                    else begin bit_cnt <= bit_cnt + 1'b1; st <= S_SETUP; end
+                end
+                S_ACK_REL: begin
+                    dio_oe <= 1'b0;
+                    st <= S_ACK_H;
+                end
+                S_ACK_H: begin
+                    clk_display <= 1'b1;
+                    st <= S_ACK_L;
+                end
+                S_ACK_L: begin
+                    clk_display <= 1'b0;
+                    st <= S_ACK_TAKE;
+                end
+                S_ACK_TAKE: begin
+                    dio_oe  <= 1'b1;
+                    dio_out <= 1'b0;
+                    if (byte_idx == 2'd1) begin
+                        byte_idx <= 2'd2;
+                        st <= S_LOAD;
+                    end else
+                        st <= S_STOP1;
+                end
+                S_STOP1: begin
+                    clk_display <= 1'b1;
+                    st <= S_STOP2;
+                end
+                S_STOP2: begin
+                    dio_out <= 1'b1;
+                    byte_idx <= (byte_idx == 2'd3) ? 2'd0 : byte_idx + 1'b1;
+                    st <= S_START0;
+                end
+                default: st <= S_START0;
             endcase
         end
     end
 
 endmodule
 
-// src/reg_bank.v
-`timescale 1ns / 1ps
-
-module reg_bank (
-    input  wire       clk,
-    input  wire       write_enable,   // BTN1: Carga valor de SW en registro actual
-    input  wire       btn_sel_reg,    // BTN0: Selecciona registro (0..3)
-    input  wire [3:0] data_in,        // SW[3:0]
-    input  wire [1:0] read_addr_a,
-    input  wire [1:0] read_addr_b,
-    output wire [3:0] data_out_a,
-    output wire [3:0] data_out_b,
-    output reg  [1:0] write_ptr = 2'b00
-);
-
-    reg [3:0] registers [3:0];
-    reg btn_sel_prev = 1'b0;
-    reg write_en_prev = 1'b0;
-
-    integer i;
-    initial begin
-        for (i = 0; i < 4; i = i + 1)
-            registers[i] = 4'b0000;
-    end
-
-    always @(posedge clk) begin
-        btn_sel_prev  <= btn_sel_reg;
-        write_en_prev <= write_enable;
-
-        // Avanza puntero de escritura con flanco de subida en BTN0
-        if (btn_sel_reg && !btn_sel_prev)
-            write_ptr <= write_ptr + 1'b1;
-
-        // Escribe en el registro activo con flanco de subida en BTN1
-        if (write_enable && !write_en_prev)
-            registers[write_ptr] <= data_in;
-    end
-
-    assign data_out_a = registers[read_addr_a];
-    assign data_out_b = registers[read_addr_b];
-
-endmodule
 
 ## Archivo `top.v`
 
