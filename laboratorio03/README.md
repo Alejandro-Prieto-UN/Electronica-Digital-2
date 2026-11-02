@@ -560,4 +560,36 @@ El controlador del display TM1637 resuelve el reto de conectar un circuito digit
    - Los valores hexadecimales de 4 bits retenidos se convierten mediante una función decodificadora (`seg7_map`) a su representación de 7 segmentos equivalente para su correcto dibujado en el dígito de la pantalla.
 # Capturas de GTKWave
 # Evidencia de funcionamiento en FPGA
+
+A continuación se presentan los registros en video que demuestran la validación funcional del sistema en la tarjeta FPGA Digilent Zybo Z7:
+
+### Prueba 1: Escritura en Banco de Registros y Selección de Operandos
+Demostración del almacenamiento de datos en los registros R0-R3, indicación de registro activo mediante el LED RGB y rotación de operandos con BTN2.
+
+<video src="vid01.mp4" controls width="100%"></video>
+
+> **Video 1:** Carga de datos en memoria e indicación visual con LEDs verdes y RGB.
+
+---
+
+### Prueba 2: Ejecución de la ALU y Transmisión Serial al Display TM1637
+Demostración de selección de operaciones con los switches SW[2:0], retención del resultado mediante BTN3 y visualización serial en el display de 7 segmentos.
+
+<video src="vid02.mp4" controls width="100%"></video>
+
+> **Video 2:** Cálculo de la ALU y actualización del display TM1637.
+
 # Análisis de resultados
+1. **Eficiencia y Modularidad del Diseño:**
+   - La separación de responsabilidades en módulos funcionales independientes (`reg_bank`, `comb_selector`, `alu` y `display_tm1637`) facilitó la verificación individual en simulación y garantizó una jerarquía limpia en el módulo `top.v`.
+   - La arquitectura combinacional pura de la ALU permite obtener el resultado de las operaciones lógicas y aritméticas en el mismo ciclo de reloj en que se direccionan los operandos, optimizando el tiempo de procesamiento.
+
+2. **Sincronización de Entradas y Mitigación de Rebotes:**
+   - La implementación de detectores de flanco de subida mediante sincronizadores de flip-flops en los botones de control (`BTN0` para cambio de registro, `BTN1` para escritura, `BTN2` para rotación de operandos y `BTN3` para ejecución) previno múltiples activaciones erráticas por ciclo, garantizando transiciones de estado controladas y predecibles.
+
+3. **Gestión de Memoria e Indicación Visual:**
+   - El banco de registros de 4 posiciones respondió correctamente a la lectura continua asíncrona de dos puertos (`data_out_a` y `data_out_b`). La integración del decodificador RGB en `top.v` proporciona una retroalimentación visual inmediata del registro de destino seleccionado para escritura.
+
+4. **Estabilidad en la Interfaz Serial del Display TM1637:**
+   - El uso de un reloj dividido por *tick* (100 kHz) a partir del reloj principal de 125 MHz evitó la inferencia de relojes derivados (*gated clocks*), previniendo problemas de temporización (*skew*) en la síntesis de Vivado.
+   - El mecanismo de retención (*latch*) controlado por `BTN3` estabiliza la visualización de 7 segmentos en el display sin afectar la ejecución en tiempo real de la ALU, mientras que la configuración tri-state en la línea `dio_display` garantizó la recepción correcta de la señal de reconocimiento (ACK) del protocolo serial.
