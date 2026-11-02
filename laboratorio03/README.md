@@ -14,7 +14,6 @@ El sistema modular está dividido en unidades funcionales independientes encarga
 
 Módulo combinacional puro encargado de ejecutar las operaciones aritméticas y lógicas seleccionadas mediante la señal `opcode[2:0]`.
 
-```verilog
 `timescale 1ns / 1ps
 
 module alu (
@@ -32,7 +31,7 @@ module alu (
             3'b010:  result = A & B;       // AND bit a bit
             3'b011:  result = A | B;       // OR bit a bit
             3'b100:  result = A ^ B;       // XOR bit a bit
-            3 me:    result = ~A;          // NOT en Operando A
+            3'b101:  result = ~A;          // NOT en Operando A
             3'b110:  result = A << 1;      // Desplazamiento lógico izquierda (Shift Left)
             3'b111:  result = A >> 1;      // Desplazamiento lógico derecha (Shift Right)
             default: result = 4'b0000;     // Estado por defecto de seguridad
@@ -69,7 +68,50 @@ module comb_selector (
         end
     end
 
-    ### 1.2.2. LÓGICA COMBINACIONAL: Mapeo de índice a direcciones y LEDs
+    // 2. LÓGICA COMBINACIONAL: Mapeo de índice a direcciones y LEDs
+    always @(*) begin
+        case (comb_index)
+            3'd0: begin // Pareja (R0, R1)
+                read_addr_a = 2'b00;
+                read_addr_b = 2'b01;
+                active_leds = 4'b0011;
+            end
+            3'd1: begin // Pareja (R0, R2)
+                read_addr_a = 2'b00;
+                read_addr_b = 2'b10;
+                active_leds = 4'b0101;
+            end
+            3'd2: begin // Pareja (R0, R3)
+                read_addr_a = 2'b00;
+                read_addr_b = 2'b11;
+                active_leds = 4'b1001;
+            end
+            3'd3: begin // Pareja (R1, R2)
+                read_addr_a = 2'b01;
+                read_addr_b = 2'b10;
+                active_leds = 4'b0110;
+            end
+            3'd4: begin // Pareja (R1, R3)
+                read_addr_a = 2'b01;
+                read_addr_b = 2'b11;
+                active_leds = 4'b1010;
+            end
+            3'd5: begin // Pareja (R2, R3)
+                read_addr_a = 2'b10;
+                read_addr_b = 2'b11;
+                active_leds = 4'b1100;
+            end
+            default: begin
+                read_addr_a = 2'b00;
+                read_addr_b = 2'b01;
+                active_leds = 4'b0011;
+            end
+        endcase
+    end
+
+endmodule
+
+    ### 1.3. Controlador de visualización
     always @(*) begin
         case (comb_index)
             3'd0: begin // Pareja (R0, R1)
@@ -266,6 +308,7 @@ module display_tm1637 (
     end
 
 endmodule
+
 ## 1.2. Módulo Principal / Top (`src/top.v`)
 
 Módulo de jerarquía superior (*Top-Level Module*) que interconecta todos los bloques funcionales del sistema. Recibe los estímulos de la FPGA (entradas de switches y pulsadores), gestiona el banco de registros local de 4 posiciones, instancia la ALU, el selector combinacional y el controlador TM1637.
