@@ -327,7 +327,7 @@ module display_tm1637 (
 endmodule
 ```
 
-##  2. Archivo. top
+##  2. Archivo top
 ```
 `timescale 1ns / 1ps
 
