@@ -1,0 +1,9 @@
+19:16:20 INFO  : Platform Build Finished successfully.
+19:16:21 INFO  : Initiating build for the Componente_app_Practica4 component.
+
+11:34:30 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B7AB44A" && level==0 && jtag_device_ctx=="jsn-Zybo Z7-210351B7AB44A-13722093-0"}' command is executed.
+11:34:31 INFO  : Device configured successfully with "C:/Users/Farad/OneDrive/Escritorio/Aplicaciones_Vitis/Componente_app_Practica4/_ide/bitstream/Practica4_wrapper.bit"
+11:34:32 INFO  : ps7_init
+11:34:33 INFO  : ps7_post_config
+11:34:33 INFO  : dow C:/Users/Farad/OneDrive/Escritorio/Aplicaciones_Vitis/Componente_app_Practica4/build/Componente_app_Practica4.elf
+11:34:33 INFO  : con
