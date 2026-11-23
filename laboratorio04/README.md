@@ -9,7 +9,7 @@
 ---
 
 ## 1. Descripción del Proyecto
-Se implementó un sistema embebido sobre el SoC **Zynq-7000** (tarjeta **Digilent Zybo Z7**) integrando el sistema de procesamiento (PS) con lógica programable (PL) mediante el bus **AXI**[cite: 5, 7]. El objetivo es controlar el parpadeo de 4 LEDs y superponer en tiempo real la lectura de 4 botones físicos mediante acceso directo a memoria en C[cite: 4, 5].
+Se implementó un sistema embebido sobre el SoC **Zynq-7000** (tarjeta **Digilent Zybo Z7**) integrando el sistema de procesamiento (PS) con lógica programable (PL) mediante el bus **AXI**. El objetivo es controlar el parpadeo de 4 LEDs y superponer en tiempo real la lectura de 4 botones físicos mediante acceso directo a memoria en C.
 
 ---
 
@@ -18,7 +18,7 @@ Se construyó el diagrama de bloques (`bloque1lab04`) conectando el procesador `
 - **Canal 1 (`GPIO`):** Entrada de 4 bits conectada a los botones (`btns_4bits`).
 - **Canal 2 (`GPIO2`):** Salida de 4 bits conectada a los LEDs (`leds_4bits`).
 
-Tras validar el diseño, se ejecutó la síntesis, implementación y generación del bitstream (`bloque1lab04_wrapper.bit`), exportando posteriormente la plataforma de hardware (`bloque1lab04_wrapper.xsa`)[cite: 5, 8].
+Tras validar el diseño, se ejecutó la síntesis, implementación y generación del bitstream (`bloque1lab04_wrapper.bit`), exportando posteriormente la plataforma de hardware (`bloque1lab04_wrapper.xsa`).
 
 ![Diagrama de Bloques en Vivado](block%20desing.png)
 
@@ -74,4 +74,19 @@ int main()
     return 0;
 }
 
+```
+
+### Evidencia de Compilación y Despliegue
+Se compiló el proyecto generando el ejecutable `Componente_app_Practica4.elf`, se programó la FPGA de la tarjeta **Zybo Z7** y se lanzó la ejecución sobre el núcleo **ARM Cortex-A9** (`target 2`).
+
+![Compilación y Ejecución en Vitis](build.jfif)
+
+* **Archivos de respaldo incluidos:** `main.c`, `log_vitis.txt.txt` y `bloque1lab04_wrapper.xsa`.
+
+---
+
+## 4. Evidencia de Funcionamiento Físico
+En el siguiente video se comprueba la ejecución del sistema en tiempo real sobre la tarjeta **Digilent Zybo Z7**: los 4 LEDs verdes parpadean periódicamente y, al presionar secuencialmente cada uno de los 4 pulsadores (`BTN0` a `BTN3`), su LED asociado se mantiene encendido de forma independiente durante la fase apagada gracias a la operación lógica `OR`.
+
+* 🎥 **Demostración en hardware:** [Ver Video01](Video01.mp4)
 ```
