@@ -25,14 +25,14 @@ Tras validar el diseño, se ejecutó la síntesis, implementación y generación
 ---
 
 ## 3. Desarrollo de Software (Vitis)
-A partir del archivo `.xsa` exportado, se creó la plataforma (`Plataforma_Practica4`) y la aplicación (`Componente_app_Practica4`) en **Vitis Unified IDE 2025.2**[cite: 6, 8].
+A partir del archivo `.xsa` exportado, se creó la plataforma (`Plataforma_Practica4`) y la aplicación (`Componente_app_Practica4`) en **Vitis Unified IDE 2025.2**.
 
 ### Lógica del Código (`main.c`)
-El programa accede directamente a los registros del periférico AXI GPIO mapeados en la dirección base `0x41200000`[cite: 4]:
+El programa accede directamente a los registros del periférico AXI GPIO mapeados en la dirección base `0x41200000`:
 - **Registro de LEDs (`GPIO_BASE + 0x00`):** Controla el estado lógico de los 4 LEDs[cite: 4].
-- **Registro de Botones (`GPIO_BASE + 0x08`):** Lee el estado de los 4 pulsadores aplicando la máscara `0xF`[cite: 4].
+- **Registro de Botones (`GPIO_BASE + 0x08`):** Lee el estado de los 4 pulsadores aplicando la máscara `0xF`.
 
-En cada ciclo, se alterna el parpadeo base entre encendido (`0xF`) y apagado (`0x0`), realizando una operación lógica **OR (`|`)** con el estado de los botones (`LED_REG = blink_state | buttons`) mediante encuestamiento (*polling*) continuo[cite: 4].
+En cada ciclo, se alterna el parpadeo base entre encendido (`0xF`) y apagado (`0x0`), realizando una operación lógica **OR (`|`)** con el estado de los botones (`LED_REG = blink_state | buttons`) mediante encuestamiento (*polling*) continuo.
 
 ```c
 #define GPIO_BASE 0x41200000
@@ -90,3 +90,8 @@ En el siguiente video se comprueba la ejecución del sistema en tiempo real sobr
 
 * 🎥 **Demostración en hardware:** [Ver Video01](Video01.mp4)
 ```
+## 5. Referencias
+1. **AMD / Xilinx.** *AXI GPIO v2.0 LogiCORE IP Product Guide (PG144).* Documentación oficial de arquitectura, mapa de registros (`GPIO_DATA` en offset `0x00` y `GPIO2_DATA` en offset `0x08`) y configuración de canales de entrada/salida sobre el bus AXI4-Lite. Disponible en: [AMD Technical Information Portal - PG144](https://docs.amd.com/r/en-US/pg144-axi-gpio)
+2. **Digilent.** *Zybo Z7 Reference Manual.* Manual oficial de hardware de la tarjeta de desarrollo basada en Zynq-7000, especificaciones de interconexión entre el sistema de procesamiento (PS) y la lógica programable (PL), y asignación física de periféricos de usuario (`BTN0–BTN3` y `LD0–LD3`). Disponible en: [Digilent Reference - Zybo Z7](https://digilent.com/reference/programmable-logic/zybo-z7/reference-manual)
+
+---
