@@ -9,7 +9,7 @@
 ---
 
 ## 1. Descripción del Proyecto
-Implementación de un sistema embebido sobre el SoC **Zynq-7000** (tarjeta **Digilent Zybo Z7**) integrando el sistema de procesamiento (PS) con lógica programable (PL) mediante el bus **AXI**[cite: 5, 7]. El objetivo es controlar el parpadeo de 4 LEDs y superponer en tiempo real la lectura de 4 botones físicos mediante acceso directo a memoria en C[cite: 4, 5].
+Se implementó un sistema embebido sobre el SoC **Zynq-7000** (tarjeta **Digilent Zybo Z7**) integrando el sistema de procesamiento (PS) con lógica programable (PL) mediante el bus **AXI**[cite: 5, 7]. El objetivo es controlar el parpadeo de 4 LEDs y superponer en tiempo real la lectura de 4 botones físicos mediante acceso directo a memoria en C[cite: 4, 5].
 
 ---
 
