@@ -1,1 +1,9 @@
-#01
+# Laboratorio 03 - ALU + Banco de Registros + Diseño Modular
+
+### NOMBRES PARTICIPANTES
+
+- Jhohan Stiven Rodríguez Rodríguez
+- Alejandro Brandon Prieto León
+- Ángel Alirio Rivera Amortegui
+
+---
