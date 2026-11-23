@@ -1,4 +1,4 @@
-# Laboratorio 03 - ALU + Banco de Registros + Diseño Modular
+# Laboratorio 04 - SoC Zynq-7000
 
 ### NOMBRES PARTICIPANTES
 
