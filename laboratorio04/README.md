@@ -89,7 +89,7 @@ Se compiló el proyecto generando el ejecutable `Componente_app_Practica4.elf`, 
 En el siguiente video se comprueba la ejecución del sistema en tiempo real sobre la tarjeta **Digilent Zybo Z7**: los 4 LEDs verdes parpadean periódicamente y, al presionar secuencialmente cada uno de los 4 pulsadores (`BTN0` a `BTN3`), su LED asociado se mantiene encendido de forma independiente durante la fase apagada gracias a la operación lógica `OR`.
 
 * 🎥 **Demostración en hardware:** [Ver Video01](Video01.mp4)
-```
+
 ## 5. Referencias
 1. **AMD / Xilinx.** *AXI GPIO v2.0 LogiCORE IP Product Guide (PG144).* Documentación oficial de arquitectura, mapa de registros (`GPIO_DATA` en offset `0x00` y `GPIO2_DATA` en offset `0x08`) y configuración de canales de entrada/salida sobre el bus AXI4-Lite. Disponible en: [AMD Technical Information Portal - PG144](https://docs.amd.com/r/en-US/pg144-axi-gpio)
 2. **Digilent.** *Zybo Z7 Reference Manual.* Manual oficial de hardware de la tarjeta de desarrollo basada en Zynq-7000, especificaciones de interconexión entre el sistema de procesamiento (PS) y la lógica programable (PL), y asignación física de periféricos de usuario (`BTN0–BTN3` y `LD0–LD3`). Disponible en: [Digilent Reference - Zybo Z7](https://digilent.com/reference/programmable-logic/zybo-z7/reference-manual)
