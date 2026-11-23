@@ -29,7 +29,7 @@ A partir del archivo `.xsa` exportado, se creó la plataforma (`Plataforma_Pract
 
 ### Lógica del Código (`main.c`)
 El programa accede directamente a los registros del periférico AXI GPIO mapeados en la dirección base `0x41200000`:
-- **Registro de LEDs (`GPIO_BASE + 0x00`):** Controla el estado lógico de los 4 LEDs[cite: 4].
+- **Registro de LEDs (`GPIO_BASE + 0x00`):** Controla el estado lógico de los 4 LEDs.
 - **Registro de Botones (`GPIO_BASE + 0x08`):** Lee el estado de los 4 pulsadores aplicando la máscara `0xF`.
 
 En cada ciclo, se alterna el parpadeo base entre encendido (`0xF`) y apagado (`0x0`), realizando una operación lógica **OR (`|`)** con el estado de los botones (`LED_REG = blink_state | buttons`) mediante encuestamiento (*polling*) continuo.
